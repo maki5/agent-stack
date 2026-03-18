@@ -1,0 +1,75 @@
+# Commit Guidelines for Agent System
+
+## Core Principle
+
+**Commits happen AT LOGICAL BREAKPOINTS during implementation, not just at the end.**
+
+Each time you complete a logical, working piece of functionality that passes its tests, commit it. This creates a clear history and allows rollback to specific points.
+
+## When to Commit
+
+### ✅ Commit Immediately After:
+{{#if_flag "has_backend" profile}}
+1. **Backend Repository + Service Layer Complete**
+   - Models defined
+   - Repository interface and implementation done
+   - Service layer with business logic complete
+   - Tests written and passing
+   → `feat(backend): add X repository and service layer`
+
+2. **Backend Handler + API Endpoints Complete**
+   - HTTP handlers implemented
+   - Routes registered
+   - Handler tests passing
+   → `feat(backend): add X handler with API endpoints`
+{{/if_flag}}{{#if_flag "has_frontend" profile}}
+3. **Frontend Service Layer Complete**
+   - API client functions
+   - Type definitions
+   - Service tests passing
+   → `feat(frontend): add X service and API integration`
+
+4. **Frontend Components Complete**
+   - Components implemented
+   - Component tests passing
+   - Styling complete
+   → `feat(frontend): add X UI components`
+{{/if_flag}}{{#if profile.test.e2e_tool}}
+5. **E2E Tests Complete**
+   - E2E tests written ({{profile.test.e2e_tool}})
+   - Tests passing
+   → `test(e2e): add X feature end-to-end tests`
+{{/if}}
+6. **Bug Fixes** → `fix(<scope>): correct X validation logic`
+
+7. **Documentation Updates** → `docs: update API documentation for X`
+
+### ❌ Do NOT Wait Until:
+
+- All backend AND frontend is done
+- All tests are written
+- Everything is perfect
+- The very end of the task
+
+## Commit Message Format
+
+```
+<type>(<scope>): <subject>
+
+<body> (optional)
+```
+
+**Types:** `feat`, `fix`, `docs`, `test`, `refactor`, `chore` (no scope)
+
+**Scopes:** `backend` | `frontend` | `e2e` | `api` | `db` | `infra`
+
+**Subject:** 50-72 chars max, imperative mood.
+
+## Implementer Responsibility
+
+The implementer agent MUST:
+1. Tell coder to commit after completing each layer
+2. Create commits throughout implementation, not just at the end
+
+**Golden Rule:**
+> If you've completed a logical piece of work that compiles, passes tests, and works on its own, **commit it immediately**.

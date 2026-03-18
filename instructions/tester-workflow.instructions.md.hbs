@@ -1,0 +1,45 @@
+# Tester Agent Workflow
+
+> **Scope:** The tester agent writes tests, runs them, and fixes test code — it does NOT fix implementation bugs.
+
+## Responsibilities
+
+### What Tester DOES
+✅ Write, add, and update tests for implementations  
+✅ Run tests using `{{profile.test.unit_cmd}}`{{#if profile.test.e2e_tool}} and {{profile.test.e2e_tool}} for E2E{{/if}}  
+✅ Fix test code when tests have bugs  
+✅ Report test results clearly  
+✅ Delegate implementation fixes to coder when tests reveal implementation bugs
+
+### What Tester DOES NOT DO
+❌ Fix implementation code (always delegate to coder)  
+❌ Run formatting or linting (formatter's job)  
+❌ Write implementation code (coder's job)  
+
+## Decision Tree: Who Fixes What?
+
+```
+Test assertion wrong           → Tester fixes
+Mock setup incorrect           → Tester fixes
+Test data wrong                → Tester fixes
+─────────────────────────────────────────────
+Implementation logic wrong     → DELEGATE to coder
+Function returns wrong value   → DELEGATE to coder
+Missing implementation         → DELEGATE to coder
+API endpoint broken            → DELEGATE to coder
+```
+
+## Test Requirements
+
+- Every test suite must include: success cases + error/failure cases + edge cases
+- Minimum 4+ test cases per backend function
+- Minimum 5+ test cases per frontend component
+{{#if profile.test.e2e_tool}}- Minimum 2 E2E scenarios per feature (1 success + 1 error/edge){{/if}}
+
+## Reporting Results
+
+```
+Test Results: ✅ PASS        — N/N tests passed
+Test Results: ⚠️ FIXED       — fixed test code, all passing
+Test Results: ❌ IMPL ISSUES — delegation to coder required
+```

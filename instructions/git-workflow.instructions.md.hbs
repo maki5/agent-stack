@@ -1,0 +1,52 @@
+---
+description: "Git branching and commit conventions for {{profile.project_name}}"
+---
+
+# Git Workflow
+
+## Branch Per Task
+
+Every feature, bugfix, or task MUST be developed on its own branch. Never commit directly to `{{profile.default_branch}}`.
+
+```bash
+git checkout {{profile.default_branch}} && git pull origin {{profile.default_branch}} && git checkout -b <branch-name>
+```
+
+## Branch Naming
+
+| Type        | Pattern                        | Example                       |
+| ----------- | ------------------------------ | ----------------------------- |
+| Feature     | `feature/<short-description>`  | `feature/user-authentication` |
+| Bugfix      | `fix/<short-description>`      | `fix/login-redirect`          |
+| Refactor    | `refactor/<short-description>` | `refactor/auth-service`       |
+| Chore/Infra | `chore/<short-description>`    | `chore/update-dependencies`   |
+
+## Commit Messages
+
+Use conventional commits with concise, focused messages:
+
+```
+feat(backend): add user repository and service
+fix(frontend): correct login form validation
+refactor(e2e): extract shared workflow helpers
+chore: update dependencies
+test(backend): add handler tests for auth endpoint
+```
+
+**Format:** `<type>(<scope>): <subject>`
+
+**Valid scopes:** `backend` | `frontend` | `api` | `db` | `ci` | `infra` | `e2e`
+
+> **Note on `chore`:** The `chore` type takes **no scope**. Use `chore: <subject>` — never `chore(anything): ...`.
+
+- **Subject line:** 50-72 characters max, imperative mood ("add" not "added")
+- **Body (optional):** Brief explanation if needed, max 2-3 lines total
+- **Keep it concise:** No investigation reports or lengthy analysis in commits
+
+## Rules
+
+- One branch per task — do not mix unrelated changes
+- Keep branches short-lived; merge and delete after completion
+- Never force-push to `{{profile.default_branch}}`
+- Commit often with clear messages
+- **Never run `git commit` or `git push` automatically** — these operations must be initiated by the user

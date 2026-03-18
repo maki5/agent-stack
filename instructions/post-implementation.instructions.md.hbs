@@ -1,0 +1,82 @@
+# Post-Implementation Workflow (Coordinator Reference)
+
+> **Single source of truth** for the post-implementation workflow. Execute these phases in order after implementation and initial testing.
+
+## Incremental Commits During Implementation
+
+**For big features, do NOT wait until the end to commit.** Create incremental commits as each layer is completed.
+
+- ✅ After completing a layer (backend/frontend/tests)
+- ✅ After fixing a significant issue
+- ✅ Before switching to a different component
+- ❌ NOT one huge commit at the end
+
+## Phase 1: Review Cycle (2 passes)
+
+```bash
+CHANGED_FILES=$(git diff --name-only {{profile.default_branch}}...HEAD)
+```
+
+### Pass 1 — Standard Review
+
+Delegate to **Reviewer** (mode: `standard`) with the changed file list.
+
+**If findings exist:** Fix loop:
+1. Coder fixes all BLOCKER and WARNING items
+2. Tester updates/runs tests — must pass before continuing
+3. If tester finds new failures → back to Coder
+4. Tester confirms all tests pass → re-run Reviewer Pass 1
+
+### Pass 2 — Independent + Cleanup Review
+
+Delegate to **Reviewer** (mode: `independent`). Include cleanup checklist.
+
+**If findings exist:** Same fix loop as Pass 1.
+
+## Phase 2: Cleanup (MANDATORY)
+
+Delegate to **Cleaner** after every feature/fix:
+- Remove dead code, unused imports, commented-out code
+- Commit design docs, delete planning artifacts
+
+## Phase 3: Format
+
+Delegate to **Formatter**:
+- Code formatting
+- Linting
+- Type checking / validation
+
+## Phase 4: Retest (conditional)
+
+**If EITHER review pass produced findings that required fixes:**
+
+```bash
+{{profile.test.unit_cmd}}
+```
+
+## Phase 5: Final Validation
+
+Run the project's validation suite. If it fails, fix and re-run.
+
+## Phase 6: Commit
+
+**GATE: User approval required**
+
+Present summary: files changed, tests passing, commits created, issues resolved.
+
+## Failure Handling
+
+| Failure | Action | Max Retries |
+|---------|--------|-------------|
+| Validation fails | Fix and re-run | 3 — then stop |
+| Migration fails | Stop immediately | 0 |
+| Tests fail (test bugs) | Tester fixes | No limit |
+| Tests fail (impl bugs) | Coder fixes → Tester re-runs | 3 — then stop |
+
+## Key Principles
+
+1. **Incremental commits** — Don't create one huge commit
+2. **Separation of concerns** — Each agent has specific responsibilities
+3. **Tester delegates impl fixes** — Never mix test and implementation fixes
+4. **Formatter runs tools** — Tester only runs tests
+5. **User gates** — Plan approval and final commit approval

@@ -1,0 +1,33 @@
+---
+applyTo: "**/migrations/**"
+description: "Database migration safety rules for {{profile.project_name}}"
+---
+
+# Database & Migration Rules
+
+## SQL Safety
+
+- **Never string-interpolate SQL** — always use parameterized queries
+- Wrap multi-step operations in transactions
+
+## Migration Guidelines
+
+1. **Ask the user before creating migrations** — they affect shared database state
+2. Write both **UP and DOWN SQL** — migrations must be reversible
+3. Apply migrations before testing
+4. Keep migrations small and focused — one logical change per migration
+
+## Safety Rules
+
+- Never drop columns/tables that the current code still reads — deploy code changes first
+- Test both UP and DOWN migrations before committing
+- Use descriptive migration names: `006_add_ratings_table`
+
+## Schema → Code Sync
+
+When changing the database schema:
+1. Write migration SQL (UP + DOWN)
+2. Update models
+3. Update repository queries
+4. Update API types if response shapes changed
+5. Run validation
