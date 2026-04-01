@@ -26,27 +26,25 @@ At startup, read `.opencode/profile.json`:
 
 ```json
 {
-  "profile": {
-    "default_branch": "main",
-    "has_backend": true,
-    "has_frontend": true,
-    "has_mobile": false,
-    "has_infra": false,
-    "has_database": true,
-    "commands": {
-      "build": "<build command>",
-      "test": "<unit test command>",
-      "lint": "<lint command>",
-      "format": "<format command>",
-      "typecheck": "<type check command>"
-    },
-    "paths": {
-      "backend_src": "<path>",
-      "frontend_src": "<path>"
-    },
-    "skills": {
-      "implementer": ["git-workflow", "code-review", "self-healing"]
-    }
+  "default_branch": "main",
+  "has_backend": true,
+  "has_frontend": true,
+  "has_mobile": false,
+  "has_infra": false,
+  "has_database": true,
+  "commands": {
+    "build": "<build command>",
+    "test": "<unit test command>",
+    "lint": "<lint command>",
+    "format": "<format command>",
+    "typecheck": "<type check command>"
+  },
+  "paths": {
+    "backend_src": "<path>",
+    "frontend_src": "<path>"
+  },
+  "skills": {
+    "implementer": ["git-workflow", "code-review", "self-healing"]
   }
 }
 ```

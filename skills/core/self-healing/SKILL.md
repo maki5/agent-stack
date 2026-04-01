@@ -51,16 +51,16 @@ Every implementation chunk should pass through a validation gate:
 
 ### After Each Implementation Chunk
 
-Read `profile.commands` from `.opencode/opencode.json` to get the actual validation commands. Then:
+Read `commands` from `.opencode/profile.json` to get the actual validation commands. Then:
 
 ```markdown
 ### Step X: Validate Chunk
 
-Run static validation using commands from profile.commands:
+Run static validation using commands from profile.json:
 
 ```bash
-# profile.commands.typecheck (if set)
-# profile.commands.lint
+# commands.typecheck (if set)
+# commands.lint
 ```
 
 If any command fails:

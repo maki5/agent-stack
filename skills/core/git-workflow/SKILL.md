@@ -43,7 +43,7 @@ Use this skill when:
 ### Creating a Branch
 
 ```bash
-# 1. Read profile.default_branch from .opencode/opencode.json
+# 1. Read default_branch from .opencode/profile.json
 # 2. Start from the default branch
 git checkout <default_branch> && git pull origin <default_branch>
 
@@ -90,7 +90,7 @@ Use the project's actual layer names as scopes. Read the project's commit histor
 | `ci` | CI/CD pipeline configs |
 | `e2e` | End-to-end tests |
 
-> **Note:** Adapt scope names to the project. Check `.opencode/opencode.json` `profile` and existing commits to see what scopes are established.
+> **Note:** Adapt scope names to the project. Check `.opencode/profile.json` and existing commits to see what scopes are established.
 
 ### Examples
 

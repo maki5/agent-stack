@@ -60,13 +60,13 @@ Every agent MUST load its skills as Phase 0 before doing any work:
 ```markdown
 ## Phase 0: Skill Loading (MANDATORY)
 
-Immediately upon startup, load your skills from `profile.skills.<agent-id>` in `.opencode/opencode.json`:
+Immediately upon startup, load your skills from `skills.<agent-id>` in `.opencode/profile.json`:
 \```
-Read .opencode/opencode.json → profile.skills.<agent-id>
+Read .opencode/profile.json → skills.<agent-id>
 For each skill name: skill("<name>")
 \```
 
-If `profile.skills.<agent-id>` is not set, load defaults:
+If `skills.<agent-id>` is not set, load defaults:
 \```
 skill("<default-skill-1>")
 skill("<default-skill-2>")
@@ -80,16 +80,18 @@ Replace `<default-skill-*>` with sensible fallbacks for the agent's domain.
 
 Agents must NEVER hardcode tech-specific commands, paths, or patterns. Instead:
 
-- Use `profile.commands.build`, `profile.commands.test`, etc. for all shell commands
-- Use `profile.paths.backend_src`, `profile.paths.frontend_src`, etc. for source directories
-- Use `profile.default_branch` for the base branch name
-- Use `profile.arch_pattern` to understand the architectural style
+- Use `commands.build`, `commands.test`, etc. for all shell commands
+- Use `paths.backend_src`, `paths.frontend_src`, etc. for source directories
+- Use `default_branch` for the base branch name
+- Use `arch_pattern` to understand the architectural style
+
+All of the above are top-level keys in `.opencode/profile.json`.
 
 Example (correct):
 ```markdown
 Run the build using the command from the profile:
 \```bash
-<profile.commands.build>
+<commands.build>
 \```
 ```
 
@@ -165,8 +167,8 @@ hidden: true
 You are the **<layer> developer agent** for this project. You implement <layer> changes as directed by the `implementer` or `debugger` coordinator agents.
 
 You are **tech-stack-agnostic by design**. All tech-specific knowledge comes from:
-1. The skills listed in `profile.skills.<agent-id>` — loaded via `skill()` at startup
-2. The profile fields (`profile.commands`, `profile.paths`, `profile.arch_pattern`)
+1. The skills listed in `skills.<agent-id>` in `.opencode/profile.json` — loaded via `skill()` at startup
+2. The profile fields (`commands`, `paths`, `arch_pattern`) in `.opencode/profile.json`
 
 ## Role
 
@@ -174,19 +176,19 @@ Your job is to:
 1. Read the plan from `docs/<feature-name>/plan-input.md`
 2. Read the project profile to understand commands and paths
 3. Load your skills
-4. Implement changes in `profile.paths.<layer>_src`
+4. Implement changes in `paths.<layer>_src`
 5. Run the build to verify correctness
 6. Report what changed
 
 ## Phase 0: Skill Loading (MANDATORY)
 
-Immediately upon startup, load your skills from `profile.skills.<agent-id>` in `.opencode/opencode.json`:
+Immediately upon startup, load your skills from `skills.<agent-id>` in `.opencode/profile.json`:
 \```
-Read .opencode/opencode.json → profile.skills.<agent-id>
+Read .opencode/profile.json → skills.<agent-id>
 For each skill name: skill("<name>")
 \```
 
-If `profile.skills.<agent-id>` is not set, load defaults:
+If `skills.<agent-id>` is not set, load defaults:
 \```
 skill("self-healing")
 skill("output-discipline")
@@ -196,10 +198,10 @@ skill("output-discipline")
 
 ### Step 1: Read Profile
 
-Read `.opencode/opencode.json`:
-- `profile.commands` — build, test, lint, format commands
-- `profile.paths.<layer>_src` — source directory
-- `profile.arch_pattern` — architectural pattern to follow
+Read `.opencode/profile.json`:
+- `commands` — build, test, lint, format commands
+- `paths.<layer>_src` — source directory
+- `arch_pattern` — architectural pattern to follow
 
 ### Step 2: Read Plan
 
@@ -213,7 +215,7 @@ Implement each task from the plan. Follow existing code patterns — read neighb
 
 ### Step 4: Build Verification
 
-Run the build using `profile.commands.build`. If it fails, apply self-healing (see `self-healing` skill). Escalate after 3 failed attempts.
+Run the build using `commands.build` from profile.json. If it fails, apply self-healing (see `self-healing` skill). Escalate after 3 failed attempts.
 
 ### Step 5: Output Summary
 
@@ -229,8 +231,8 @@ Status: PASS
 
 1. Always read the plan before implementing
 2. Follow existing patterns — read neighbouring files first
-3. Use `profile.commands` for all shell commands — never hardcode
-4. Use `profile.paths` for source directories — never hardcode
+3. Use `commands` from profile.json for all shell commands — never hardcode
+4. Use `paths` from profile.json for source directories — never hardcode
 5. Never skip the build verification step
 6. Never create subagents — implement directly
 7. Escalate build failures after 3 retries
@@ -238,7 +240,7 @@ Status: PASS
 
 ## Common Mistakes to Avoid
 
-1. **Hardcoded tech commands** — Always use `profile.commands.*`
+1. **Hardcoded tech commands** — Always use `commands.*` from profile.json
 2. **Missing Phase 0** — Every agent must load skills first
 3. **No output summary** — Always emit a structured completion block
 4. **Missing frontmatter** — Every file must start with YAML frontmatter

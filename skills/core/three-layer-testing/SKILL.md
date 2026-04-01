@@ -134,7 +134,7 @@ Cases:
 ### Key Principles
 
 - **Test complete user journeys** — not isolated actions
-- **Use the project's E2E framework** — read `profile.commands.e2e` and check the project's E2E directory for patterns
+- **Use the project's E2E framework** — read `commands.e2e` from `.opencode/profile.json` and check the project's E2E directory for patterns
 - **Seed/reset test data** appropriately before each test
 - **Do not hardcode wait times** — use the framework's built-in waiting mechanisms
 - **Test both success and error paths**
@@ -147,14 +147,14 @@ Cases:
 
 ## Running Tests
 
-Always read `profile.commands` from `.opencode/opencode.json` for the correct commands:
+Always read `commands` from `.opencode/profile.json` for the correct commands:
 
 ```bash
 # Unit/integration tests
-<profile.commands.test>
+<commands.test>
 
-# E2E tests (if profile.commands.e2e is set)
-<profile.commands.e2e>
+# E2E tests (if commands.e2e is set)
+<commands.e2e>
 ```
 
 Do not guess or assume command names — always read them from the profile.

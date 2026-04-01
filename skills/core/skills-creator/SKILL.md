@@ -144,7 +144,7 @@ If the skill covers a tech stack with specific commands, include them explicitly
 ```markdown
 ## Commands Reference
 
-All commands come from `profile.commands` in `.opencode/opencode.json`. The typical values for this stack are:
+All commands come from `commands` in `.opencode/profile.json`. The typical values for this stack are:
 
 | Profile key | Typical value for this stack |
 |-------------|------------------------------|
