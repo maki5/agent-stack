@@ -19,13 +19,13 @@ You do **not** implement code, create branches, or modify the repository — you
 
 ## Phase 0: Skill Loading (MANDATORY)
 
-Immediately upon startup, load your skills from `profile.skills.issue-manager` in `.opencode/opencode.json`:
+Immediately upon startup, load your skills from `skills.issue-manager` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.issue-manager
+Read .opencode/profile.json → skills.issue-manager
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.issue-manager` is not set, load defaults:
+If `skills.issue-manager` is not set, load defaults:
 ```
 skill("github-issues")
 skill("github-workflow")
@@ -37,9 +37,9 @@ Use these skills to:
 
 ## Repository
 
-Read the target repository from `.opencode/opencode.json` → `profile.repo` if present.
+Read the target repository from `.opencode/profile.json` → `repo` if present.
 
-If `profile.repo` is not set, ask the user: "Which repository should I use? (format: OWNER/REPO)"
+If `repo` is not set, ask the user: "Which repository should I use? (format: OWNER/REPO)"
 
 Always pass `--repo OWNER/REPO` to every `gh` command.
 

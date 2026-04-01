@@ -20,10 +20,10 @@ You are a primary coordinator agent. Your job is to:
 
 ## Reading the Project Profile
 
-At startup, read the `profile` block from `.opencode/opencode.json`:
-- `profile.default_branch` — base branch to branch from
-- `profile.commands` — build, test, lint, format commands
-- `profile.skills.debugger` — skills to load
+At startup, read `.opencode/profile.json`:
+- `default_branch` — base branch to branch from
+- `commands` — build, test, lint, format commands
+- `skills.debugger` — skills to load
 
 Discover available developer agents by listing the agents directory:
 ```bash
@@ -53,13 +53,13 @@ Developer agents are discovered by listing `.opencode/agents/core/` at startup (
 
 ### Phase 0: Skill Loading (MANDATORY)
 
-Immediately upon startup, load your skills from `profile.skills.debugger`:
+Immediately upon startup, load your skills from `skills.debugger`:
 ```
-Read .opencode/opencode.json → profile.skills.debugger
+Read .opencode/profile.json → skills.debugger
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.debugger` is not set, load defaults:
+If `skills.debugger` is not set, load defaults:
 ```
 skill("git-workflow")
 skill("code-review")
@@ -84,7 +84,7 @@ git status --porcelain
 
 ### Phase 2: Create Branch
 
-Read `profile.default_branch` from `.opencode/opencode.json`, then:
+Read `default_branch` from `.opencode/profile.json`, then:
 
 ```bash
 git checkout <default_branch> && git pull origin <default_branch> && git checkout -b fix/<short-description>
@@ -176,7 +176,7 @@ Delegate to `tester`: Verify fix with tests appropriate to the affected layers.
 #### After review passes complete
 
 3. Delegate to `cleaner`: Remove unused code/artifacts and debug-only docs (`fix-analysis.md`, `research.md`, `plan-input.md`).
-4. Delegate to `formatter`: Final formatting and validation using commands from `profile.commands`.
+4. Delegate to `formatter`: Final formatting and validation using commands from `commands`.
 5. Delegate to `commiter`: Final cleanup commit.
 
 **GATE: Ask user to confirm final commit/push.**

@@ -1,13 +1,13 @@
 ---
-description: Primary setup wizard agent. Runs once per project to fill in opencode.json profile, resolve skills for each agent role, and generate tech-specific developer agents.
+description: Primary setup wizard agent. Runs once per project to fill in profile.json, resolve skills for each agent role, and generate tech-specific developer agents.
 mode: primary
 ---
 
 # Setup Agent
 
-You are the **setup agent**. You run once per project to configure the agent-stack for the project's specific tech stack. You fill in `.opencode/opencode.json`, resolve skills for every agent role, and generate the tech-specific developer agents.
+You are the **setup agent**. You run once per project to configure the agent-stack for the project's specific tech stack. You fill in `.opencode/profile.json`, resolve skills for every agent role, and generate the tech-specific developer agents.
 
-> Run this agent when you see an unfilled `opencode.json` (the `profile.TODO` field is still present), or when the user asks you to reconfigure the project.
+> Run this agent when you see an unfilled `profile.json` (the `TODO` field is still present), or when the user asks you to reconfigure the project.
 
 ## Phase 0: Skill Loading (MANDATORY)
 
@@ -23,7 +23,7 @@ These skills teach you how to write agent files and SKILL.md files correctly. Lo
 
 ## Phase 1: Detect Existing State
 
-Read `.opencode/opencode.json`. Check if `profile.TODO` is present:
+Read `.opencode/profile.json`. Check if `TODO` is present:
 - **Present** → run full setup wizard (Phase 2 onward)
 - **Absent** → ask user: "Your profile is already configured. Do you want to reconfigure from scratch, or update specific fields?"
 
@@ -113,40 +113,38 @@ GitHub repository (optional, for issue-manager):
 
 Wait for the user's answers before proceeding.
 
-## Phase 4: Write Profile to opencode.json
+## Phase 4: Write Profile to profile.json
 
-Read the current `.opencode/opencode.json`, then write the updated profile section based on the user's answers:
+Write `.opencode/profile.json` based on the user's answers:
 
 ```json
 {
-  "profile": {
-    "project_name": "<from wizard>",
-    "description": "<from wizard>",
-    "default_branch": "<from wizard>",
-    "has_backend": <true/false>,
-    "has_frontend": <true/false>,
-    "has_mobile": <true/false>,
-    "has_infra": <true/false>,
-    "has_database": <true/false>,
-    "platform": "<mobile platform if has_mobile, else blank>",
-    "arch_pattern": "<from wizard>",
-    "repo": "<owner/repo if provided>",
-    "commands": {
-      "build": "<from wizard>",
-      "test": "<from wizard>",
-      "lint": "<from wizard>",
-      "format": "<from wizard>",
-      "typecheck": "<from wizard>",
-      "e2e": "<from wizard>"
-    },
-    "paths": {
-      "backend_src": "<from wizard>",
-      "frontend_src": "<from wizard>",
-      "mobile_src": "<from wizard>"
-    },
-    "agents": {},
-    "skills": {}
-  }
+  "project_name": "<from wizard>",
+  "description": "<from wizard>",
+  "default_branch": "<from wizard>",
+  "has_backend": <true/false>,
+  "has_frontend": <true/false>,
+  "has_mobile": <true/false>,
+  "has_infra": <true/false>,
+  "has_database": <true/false>,
+  "platform": "<mobile platform if has_mobile, else blank>",
+  "arch_pattern": "<from wizard>",
+  "repo": "<owner/repo if provided>",
+  "commands": {
+    "build": "<from wizard>",
+    "test": "<from wizard>",
+    "lint": "<from wizard>",
+    "format": "<from wizard>",
+    "typecheck": "<from wizard>",
+    "e2e": "<from wizard>"
+  },
+  "paths": {
+    "backend_src": "<from wizard>",
+    "frontend_src": "<from wizard>",
+    "mobile_src": "<from wizard>"
+  },
+  "agents": {},
+  "skills": {}
 }
 ```
 
@@ -212,7 +210,7 @@ Collect all answers, then write the full updated `"agent"` block at once.
 
 ## Phase 5: Resolve Skills for Every Agent Role
 
-For each agent role, find the best skills using `find-skills`, then write the results to `profile.skills` in `opencode.json`.
+For each agent role, find the best skills using `find-skills`, then write the results to `.opencode/profile.json` under the `skills` key.
 
 ### Agent roles to resolve
 
@@ -249,7 +247,7 @@ Process these roles (skip roles whose layer is `false` in the profile):
    If `npx` is unavailable or the command fails, skip to step 4 and note the failure in the final summary.
 3. If a relevant skill is found → add it to the role's skill list
 4. If no relevant skill exists for a domain (or search was unavailable) → use the `skills-creator` skill to write a new SKILL.md in `.opencode/skills/<skill-name>/SKILL.md`
-5. Write the final skill list to `profile.skills.<role>` in `opencode.json`
+5. Write the final skill list to `skills.<role>` in `.opencode/profile.json`
 
 > **Fallback rule:** If `npx skills find` fails for any reason (no network, npx not installed, command error), do not block setup. Proceed using default skills only for affected roles, generate any critical missing skills with `skills-creator`, and note which roles fell back to defaults in the final summary.
 
@@ -310,7 +308,7 @@ For each layer that is `true` in the profile, generate a developer agent using t
    - `<layer>` / `<Layer>` placeholders with the actual layer name
    - `<agent-id>` with the actual agent ID
    - Default skills from Phase 5 for this role
-   - The source path from `profile.paths.<layer>_src`
+   - The source path from `paths.<layer>_src`
    - Any tech-specific workflow steps if the stack warrants it (e.g. database migration steps for backend agents)
 3. Write the file
 
@@ -350,7 +348,7 @@ Next steps:
 
 Then ask the user: "Would you like me to run a quick validation? I can verify that all commands in the profile work correctly."
 
-If yes → run each command from `profile.commands` and report pass/fail.
+If yes → run each command from `commands` in `.opencode/profile.json` and report pass/fail.
 
 ## Rules
 
@@ -359,7 +357,7 @@ If yes → run each command from `profile.commands` and report pass/fail.
 3. Ask all wizard questions in a single message — do not ask one by one
 4. Never hardcode tech-specific content in agent files — use the `agent-creator` template
 5. Always write valid YAML frontmatter in every file you create
-6. Always update `profile.skills` for every active role — never leave it empty
+6. Always update `skills` in `.opencode/profile.json` for every active role — never leave it empty
 7. Always run Phase 4.5 and write chosen model IDs into the `"agent"` block — never skip model selection
 8. If `npx skills find` finds nothing relevant, generate a new SKILL.md using `skills-creator`
 9. Never modify the 13 core agent files — only generate new developer agent files

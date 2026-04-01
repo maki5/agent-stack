@@ -90,35 +90,38 @@ const OPENCODE_JSON_STUB = `{
     "issue-manager": {
       "model": "opencode/gpt-5-nano"
     }
-  },
-
-  "profile": {
-    "TODO": "Run /setup in OpenCode to complete this section",
-    "project_name": "",
-    "description": "",
-    "default_branch": "main",
-    "has_backend": false,
-    "has_frontend": false,
-    "has_mobile": false,
-    "has_infra": false,
-    "has_database": false,
-    "platform": "",
-    "arch_pattern": "",
-    "commands": {
-      "build": "",
-      "test": "",
-      "lint": "",
-      "format": "",
-      "typecheck": "",
-      "e2e": ""
-    },
-    "paths": {
-      "backend_src": "",
-      "frontend_src": "",
-      "mobile_src": ""
-    },
-    "skills": {}
   }
+}
+`;
+
+// ─── Stub profile.json ────────────────────────────────────────────────────────
+
+const PROFILE_JSON_STUB = `{
+  "TODO": "Run /setup in OpenCode to complete this file",
+  "project_name": "",
+  "description": "",
+  "default_branch": "main",
+  "has_backend": false,
+  "has_frontend": false,
+  "has_mobile": false,
+  "has_infra": false,
+  "has_database": false,
+  "platform": "",
+  "arch_pattern": "",
+  "commands": {
+    "build": "",
+    "test": "",
+    "lint": "",
+    "format": "",
+    "typecheck": "",
+    "e2e": ""
+  },
+  "paths": {
+    "backend_src": "",
+    "frontend_src": "",
+    "mobile_src": ""
+  },
+  "skills": {}
 }
 `;
 
@@ -142,6 +145,15 @@ export async function generate(opts: GenerateOptions = {}): Promise<void> {
     console.log("  ✓ .opencode/opencode.json (stub — complete via /setup)");
   } else {
     console.log("  ↷ .opencode/opencode.json already exists — skipped");
+  }
+
+  // ── 1b. profile.json stub ─────────────────────────────────────────────────
+  const profileJsonPath = join(opencodeDir, "profile.json");
+  if (!existsSync(profileJsonPath)) {
+    writeFile(profileJsonPath, PROFILE_JSON_STUB);
+    console.log("  ✓ .opencode/profile.json (stub — complete via /setup)");
+  } else {
+    console.log("  ↷ .opencode/profile.json already exists — skipped");
   }
 
   // ── 2. Core agents ─────────────────────────────────────────────────────────

@@ -21,13 +21,13 @@ Your job is to:
 
 ## Available Skills
 
-Load skills upon startup from `profile.skills.ui-designer` in `.opencode/opencode.json`:
+Load skills upon startup from `skills.ui-designer` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.ui-designer
+Read .opencode/profile.json → skills.ui-designer
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.ui-designer` is not set, load defaults:
+If `skills.ui-designer` is not set, load defaults:
 ```
 skill("ui-ux-pro-max")
 skill("web-design-guidelines")

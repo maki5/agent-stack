@@ -25,13 +25,13 @@ Your job is to:
 
 ### Step 1: Load Skills
 
-Load skills from `profile.skills.commiter` in `.opencode/opencode.json`:
+Load skills from `skills.commiter` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.commiter
+Read .opencode/profile.json → skills.commiter
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.commiter` is not set, load defaults:
+If `skills.commiter` is not set, load defaults:
 ```
 skill("git-workflow")
 skill("output-discipline")
@@ -39,7 +39,7 @@ skill("output-discipline")
 
 ### Step 2: Read Profile
 
-Read `profile.default_branch` from `.opencode/opencode.json`.
+Read `default_branch` from `.opencode/profile.json`.
 
 ### Step 3: Review Changes
 
@@ -201,4 +201,4 @@ AWAITING USER APPROVAL
 4. Apply atomic commit rules from `git-workflow` skill — one logical change per commit
 5. Include "what" and "why" in commit message body when the change is non-obvious
 6. Every commit must leave the project in a working state — never commit broken code
-7. Always read `profile.default_branch` — never hardcode branch names
+7. Always read `default_branch` — never hardcode branch names

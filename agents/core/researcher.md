@@ -19,19 +19,19 @@ Your job is to:
 
 ## Required Skills
 
-Load skills upon startup from `profile.skills.researcher` in `.opencode/opencode.json`:
+Load skills upon startup from `skills.researcher` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.researcher
+Read .opencode/profile.json → skills.researcher
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.researcher` is not set, load defaults:
+If `skills.researcher` is not set, load defaults:
 ```
 skill("research")
 skill("architecture-patterns")
 ```
 
-Then load any additional tech-specific skills listed in `profile.skills.researcher`. The setup agent will have populated this list with skills appropriate for the project's stack (e.g. backend patterns, frontend patterns, database patterns). Do not assume any specific skill names — read them from the profile.
+Then load any additional tech-specific skills listed in `skills.researcher`. The setup agent will have populated this list with skills appropriate for the project's stack (e.g. backend patterns, frontend patterns, database patterns). Do not assume any specific skill names — read them from the profile.
 
 ## Caching Mechanism
 
@@ -49,9 +49,9 @@ Then load any additional tech-specific skills listed in `profile.skills.research
 
 ### Phase 1: Understand Project Structure
 
-Read `.opencode/opencode.json` to understand the profile:
+Read `.opencode/profile.json` to understand the project profile:
 - What layers exist (`has_backend`, `has_frontend`, `has_mobile`, `has_infra`)?
-- Where do source files live (`profile.paths`)?
+- Where do source files live (`paths`)?
 - What tech stack is in use?
 
 Then discover the actual project layout:
@@ -63,9 +63,9 @@ ls -la
 
 Research the system based on what the profile says exists:
 
-**If `has_backend: true`:** Explore `profile.paths.backend_src`, find API routes, services, data models
-**If `has_frontend: true`:** Explore `profile.paths.frontend_src`, find pages, components, state management
-**If `has_mobile: true`:** Explore `profile.paths.mobile_src`, find screens, view models, navigation
+**If `has_backend: true`:** Explore `paths.backend_src`, find API routes, services, data models
+**If `has_frontend: true`:** Explore `paths.frontend_src`, find pages, components, state management
+**If `has_mobile: true`:** Explore `paths.mobile_src`, find screens, view models, navigation
 **If `has_infra: true`:** Explore infrastructure directory, understand cloud resources
 **If `has_database: true`:** Find schema files, migrations, ORM models
 

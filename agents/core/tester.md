@@ -30,13 +30,13 @@ Your job is to:
 
 ### Step 1: Load Testing Skills
 
-Load skills from `profile.skills.tester` in `.opencode/opencode.json`:
+Load skills from `skills.tester` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.tester
+Read .opencode/profile.json → skills.tester
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.tester` is not set, load defaults:
+If `skills.tester` is not set, load defaults:
 ```
 skill("three-layer-testing")
 skill("self-healing")
@@ -47,8 +47,8 @@ The setup agent will have populated this with tech-specific testing skills appro
 ### Step 2: Read Profile for Test Commands
 
 Read `.opencode/opencode.json` to get the correct commands:
-- `profile.commands.test` — unit/integration test command
-- `profile.commands.e2e` — E2E test command (if set)
+- `commands.test` — unit/integration test command
+- `commands.e2e` — E2E test command (if set)
 
 Use these exact commands when running tests. Do not guess or assume command names.
 
@@ -93,10 +93,10 @@ Run tests using commands from the profile:
 
 ```bash
 # Unit/integration tests
-<profile.commands.test>
+<commands.test>
 
-# E2E tests (if profile.commands.e2e is set and environment is running)
-<profile.commands.e2e>
+# E2E tests (if commands.e2e is set and environment is running)
+<commands.e2e>
 ```
 
 ### Step 6: Analyze Failures
@@ -115,7 +115,7 @@ For each failure:
 3. Use the project's existing selector/attribute conventions for UI tests — check the codebase first
 4. Mock external dependencies
 5. Tests must be independent and repeatable
-6. Always read `profile.commands` for test commands — never hardcode them
+6. Always read `commands` for test commands — never hardcode them
 
 ## Output Format
 

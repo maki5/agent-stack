@@ -28,20 +28,20 @@ Your job is to:
 
 ### Step 1: Load Review Skills
 
-Load skills from `profile.skills.reviewer` in `.opencode/opencode.json`:
+Load skills from `skills.reviewer` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.reviewer
+Read .opencode/profile.json → skills.reviewer
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.reviewer` is not set, load defaults:
+If `skills.reviewer` is not set, load defaults:
 ```
 skill("code-review")
 ```
 
 ### Step 2: Get Changed Files
 
-Read `profile.default_branch` from `.opencode/opencode.json`, then:
+Read `default_branch` from `.opencode/profile.json`, then:
 
 ```bash
 git diff --name-only <default_branch>...HEAD
@@ -197,4 +197,4 @@ Ready to proceed: <yes/no>
 4. Use severity appropriately — P1 only for real blockers
 5. If issues found, they must be fixed before proceeding
 6. **Return all findings to the coordinator** — never delegate fixes directly. The coordinator (implementer or debugger) owns the fix loop: developer agent fixes → tester re-runs tests → coordinator re-delegates to reviewer to verify.
-7. Always read `profile.default_branch` to get the correct base branch for `git diff`
+7. Always read `default_branch` to get the correct base branch for `git diff`

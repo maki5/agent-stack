@@ -29,17 +29,17 @@ Your job is to:
 
 ### Step 1: Load Skills
 
-Load skills from `profile.skills.cleaner` in `.opencode/opencode.json`:
+Load skills from `skills.cleaner` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.cleaner
+Read .opencode/profile.json → skills.cleaner
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.cleaner` is not set, no default skills are required — proceed directly.
+If `skills.cleaner` is not set, no default skills are required — proceed directly.
 
 ### Step 2: Get Changed Files
 
-Read `profile.default_branch` from `.opencode/opencode.json`, then:
+Read `default_branch` from `.opencode/profile.json`, then:
 
 ```bash
 git diff --name-only <default_branch>...HEAD
@@ -81,7 +81,7 @@ Before removing anything:
 
 Remove unused imports, commented-out code blocks, dead files — whatever is found.
 
-After cleanup, run the project's lint command to verify nothing broke. Read `profile.commands.lint` from `.opencode/opencode.json` for the correct command.
+After cleanup, run the project's lint command to verify nothing broke. Read `commands.lint` from `.opencode/profile.json` for the correct command.
 
 ### Step 6: Clean Up Research & Design Files (MANDATORY — always last)
 
@@ -165,6 +165,6 @@ No cleanup needed: <yes/no>
 2. When in doubt, ask or leave it
 3. Don't remove test files or migrations
 4. Don't change behavior while cleaning
-5. Run the project's lint command after cleanup to verify nothing broke — read `profile.commands.lint` for the command
+5. Run the project's lint command after cleanup to verify nothing broke — read `commands.lint` for the command
 6. **Always run Step 6** — docs cleanup is mandatory, not optional
-7. Always read `profile.default_branch` to get the correct base branch for `git diff`
+7. Always read `default_branch` to get the correct base branch for `git diff`

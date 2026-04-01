@@ -19,13 +19,13 @@ Your job is to:
 
 ## Required Skills
 
-Load skills upon startup from `profile.skills.designer` in `.opencode/opencode.json`:
+Load skills upon startup from `skills.designer` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.designer
+Read .opencode/profile.json → skills.designer
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.designer` is not set, load defaults:
+If `skills.designer` is not set, load defaults:
 ```
 skill("three-layer-testing")
 skill("code-review")
@@ -33,7 +33,7 @@ skill("mermaid-diagrams")
 skill("implement-design")
 ```
 
-Then load any additional skills listed in `profile.skills.designer`. The setup agent will have populated this with tech-specific skills (e.g. backend patterns, frontend patterns, UI/UX guidelines). Do not assume any specific skill names — read them from the profile.
+Then load any additional skills listed in `skills.designer`. The setup agent will have populated this with tech-specific skills (e.g. backend patterns, frontend patterns, UI/UX guidelines). Do not assume any specific skill names — read them from the profile.
 
 These skills help you:
 - **three-layer-testing**: Design comprehensive testing strategies

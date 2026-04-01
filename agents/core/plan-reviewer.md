@@ -28,13 +28,13 @@ Your job is to:
 
 ## Phase 0: Skill Loading (MANDATORY)
 
-Load skills from `profile.skills.plan-reviewer` in `.opencode/opencode.json`:
+Load skills from `skills.plan-reviewer` in `.opencode/profile.json`:
 ```
-Read .opencode/opencode.json → profile.skills.plan-reviewer
+Read .opencode/profile.json → skills.plan-reviewer
 For each skill name: skill("<name>")
 ```
 
-If `profile.skills.plan-reviewer` is not set, load defaults:
+If `skills.plan-reviewer` is not set, load defaults:
 ```
 skill("three-layer-testing")
 skill("code-review")
@@ -55,7 +55,7 @@ Read both the design and the plan:
 - `docs/<feature-name>/design.md` — the approved design (source of truth)
 - `docs/<feature-name>/plan-input.md` — the plan to review
 
-Also read `.opencode/opencode.json` to understand the profile (active layers, paths, commands).
+Also read `.opencode/profile.json` to understand the project profile (active layers, paths, commands).
 
 ### Step 2: Review the Plan
 
@@ -71,7 +71,7 @@ Evaluate the plan against these checklists:
 - [ ] Acceptance criteria listed
 
 #### Correctness
-- [ ] File paths referenced in the plan match actual project layout (verified against `profile.paths` and the codebase)
+- [ ] File paths referenced in the plan match actual project layout (verified against `paths` and the codebase)
 - [ ] Correct layer ordering for the project's architecture pattern
 - [ ] Migrations are applied before any service/handler tasks that depend on new schema
 - [ ] API spec regeneration step (if applicable) is run after handler changes

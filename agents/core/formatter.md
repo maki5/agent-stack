@@ -26,13 +26,13 @@ Your job is to:
 
 ## Workflow
 
-Read the project profile from `.opencode/opencode.json` to get the correct commands before running anything. All commands are in `profile.commands`.
+Read the project profile from `.opencode/profile.json` to get the correct commands before running anything. All commands are in `commands`.
 
 ### Step 1: Format Code
 
 Run the project's formatter:
 ```bash
-# Read profile.commands.format and run it
+# Read commands.format and run it
 # e.g. make format, npm run format, gofmt -w ., prettier --write ., dart format .
 ```
 
@@ -40,7 +40,7 @@ Run the project's formatter:
 
 Run the project's linter:
 ```bash
-# Read profile.commands.lint and run it
+# Read commands.lint and run it
 # e.g. make lint, npm run lint, golangci-lint run, eslint ., flutter analyze
 ```
 
@@ -48,7 +48,7 @@ Run the project's linter:
 
 Run the project's type checker (if applicable):
 ```bash
-# Read profile.commands.typecheck and run it (if set)
+# Read commands.typecheck and run it (if set)
 # e.g. go vet ./..., npx tsc --noEmit, mypy ., dart analyze
 ```
 
@@ -56,7 +56,7 @@ Run the project's type checker (if applicable):
 
 Run the full validation pipeline if the project has one:
 ```bash
-# Check profile.commands.validate or combine the above steps
+# Check commands.validate or combine the above steps
 # This typically runs: tests + linting + format check
 ```
 
@@ -103,7 +103,7 @@ All checks pass: <yes/no>
 
 ## Rules
 
-1. Always read `profile.commands` first — never assume command names
+1. Always read `commands` first — never assume command names
 2. Fix issues, don't just suppress them
 3. If an issue can't be fixed, document why
 4. Don't proceed until validation passes
