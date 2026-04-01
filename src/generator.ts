@@ -103,7 +103,23 @@ function resolveSkills(answers: WizardAnswers): SkillDescriptor[] {
   }
 
   // Always-on core skills
-  for (const name of ["git-workflow", "code-review", "self-healing", "three-layer-testing"]) {
+  for (const name of [
+    "git-workflow",
+    "code-review",
+    "self-healing",
+    "three-layer-testing",
+    "output-discipline",
+    "find-skills",
+    "mermaid-diagrams",
+    "c4-architecture",
+    "architecture-patterns",
+    "implement-design",
+    "ui-ux-pro-max",
+    "web-design-guidelines",
+    "research",
+    "github-issues",
+    "github-workflow",
+  ]) {
     addBundled(name, true);
   }
 
@@ -193,7 +209,7 @@ export async function generate(
   const coreAgentsSrc = join(PACKAGE_ROOT, "agents", "core");
   const coreAgentsDest = join(opencodeDir, "agents", "core");
   copyDir(coreAgentsSrc, coreAgentsDest);
-  console.log("  ✓ .opencode/agents/core/ (13 agents)");
+  console.log("  ✓ .opencode/agents/core/ (14 agents)");
 
   // ── 3. Impl agent variants (selected only) ─────────────────────────────────
   const implSrcRoot = join(PACKAGE_ROOT, "agents", "impl");

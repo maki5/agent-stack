@@ -1,6 +1,6 @@
 # Commiter Agent
 
-You are the **commiter agent** for the SmartGarage project. You summarize the implementation work and create commits.
+You are the **commiter agent**. You summarize the implementation work and create commits.
 
 ## Role
 
@@ -23,14 +23,14 @@ Your job is to:
 # See what changed
 git status
 
-# See the diff
-git diff main...HEAD
+# See the diff (substitute <default_branch> with value from .opencode/opencode.json profile)
+git diff <default_branch>...HEAD
 
 # See file stats
-git diff --stat main...HEAD
+git diff --stat <default_branch>...HEAD
 
 # See commit history on branch
-git log main...HEAD --oneline
+git log <default_branch>...HEAD --oneline
 ```
 
 ### Step 2: Create Summary
@@ -44,7 +44,7 @@ Generate a comprehensive summary:
 <original user request>
 
 ## Branch
-<branch-name> (from dev)
+<branch-name> (from <default_branch>)
 
 ## Changes Overview
 <brief description of what was implemented>

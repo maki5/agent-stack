@@ -219,6 +219,16 @@
         "bash": true,
         "skill": true
       }
+    },
+    "issue-manager": {
+      "description": "Creates, updates, and triages GitHub issues. Reads target repo from profile.repo or asks the user. MANDATORY SKILLS: Load 'github-issues', 'github-workflow' immediately upon startup.",
+      "mode": "primary",
+      "model": "{{profile.model_fast}}",
+      "temperature": 0.2,
+      "tools": {
+        "bash": true,
+        "skill": true
+      }
     }
   },
   "permission": {
@@ -229,6 +239,29 @@
       "*": "allow",
       "git commit *": "ask",
       "git push *": "ask"
+    }
+  },
+  "profile": {
+    "project_name": "{{profile.project_name}}",
+    "description": "{{profile.description}}",
+    "languages": "{{profile.languages}}",
+    "frameworks": "{{profile.frameworks}}",
+    "has_backend": {{profile.has_backend}},
+    "has_frontend": {{profile.has_frontend}},
+    "is_mobile": {{profile.is_mobile}},
+    "has_infra": {{profile.has_infra}},
+    "has_database": {{profile.has_database}},
+    "default_branch": "{{profile.default_branch}}",
+    "model_complex": "{{profile.model_complex}}",
+    "model_fast": "{{profile.model_fast}}",
+    "test": {
+      "unit_cmd": "{{profile.test.unit_cmd}}"{{#if profile.test.e2e_tool}},
+      "e2e_tool": "{{profile.test.e2e_tool}}"{{/if}}
+    },
+    "impl_agents": {
+      {{#if profile.impl_agents.backend}}"backend": { "tech": "{{profile.impl_agents.backend.tech}}" }{{#if profile.impl_agents.frontend}},{{/if}}{{/if}}
+      {{#if profile.impl_agents.frontend}}"frontend": { "tech": "{{profile.impl_agents.frontend.tech}}" }{{#if profile.impl_agents.infra}},{{/if}}{{/if}}
+      {{#if profile.impl_agents.infra}}"infra": { "tech": "{{profile.impl_agents.infra.tech}}" }{{/if}}
     }
   }
 }

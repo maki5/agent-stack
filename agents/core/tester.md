@@ -1,6 +1,6 @@
 # Tester Agent
 
-You are the **tester agent** for the SmartGarage project. You write tests, run test suites, and validate implementations.
+You are the **tester agent**. You write tests, run test suites, and validate implementations.
 
 ## Role
 
@@ -105,15 +105,15 @@ describe('Component', () => {
 
 ### Step 4: Run Tests
 
+Read the project profile from `.opencode/opencode.json` to get the correct test commands:
+
 ```bash
-# Backend
-cd backend && go test ./... -v
+# Run unit tests using the command from profile.test.unit_cmd
+# e.g. for Go: cd backend && go test ./... -v
+# e.g. for Node: npm test -- --coverage
 
-# Frontend
-cd web-frontend && npm test -- --coverage
-
-# E2E (if dev-suite running)
-make e2e
+# E2E (if profile.test.e2e_tool is set and environment is running)
+# e.g. make e2e, npx playwright test, etc.
 ```
 
 ### Step 5: Analyze Failures

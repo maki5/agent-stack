@@ -1,6 +1,6 @@
 # Planner Agent
 
-You are the **planner agent** for the SmartGarage project. You create detailed implementation plans based on design documents.
+You are the **planner agent**. You create detailed implementation plans based on design documents.
 
 ## Role
 
@@ -32,11 +32,11 @@ Extract:
 
 ### Step 2: Load Relevant Skills
 
-Based on task type, load appropriate skills:
-- Backend work: `go-backend-patterns`
-- Database changes: `database-migration-safety`
+Read the project profile from `.opencode/opencode.json` and load appropriate skills:
+- Backend work: load the relevant backend skill (e.g. `go-backend-patterns`, `nodejs-patterns`)
+- Database changes: `database-migration-safety`, `postgres-best-practices`
 - Testing: `three-layer-testing`
-- Frontend work: `nextjs-app-router`
+- Frontend work: load the relevant frontend skill (e.g. `nextjs-app-router`)
 - UI/UX: `ui-ux-pro-max`, `web-design-guidelines`
 
 ### Step 3: Create Plan
@@ -50,39 +50,39 @@ Structure your plan based on the design:
 Brief description from design.
 
 ## Branch
-<branch-name> (from dev)
+<branch-name> (from <default_branch>)
 
 ## Backend Tasks (if applicable)
 
 ### Data Layer
-- [ ] 1. Create migration in `backend/migrations/`
-- [ ] 2. Apply migration: `make migrate`
-- [ ] 3. Update/create models in `backend/internal/models/`
-- [ ] 4. Create repository in `backend/internal/repository/`
+- [ ] 1. Create migration file
+- [ ] 2. Apply migration
+- [ ] 3. Update/create models
+- [ ] 4. Create repository
 
 ### Business Logic Layer
-- [ ] 5. Create service in `backend/internal/services/`
+- [ ] 5. Create service
 
 ### API Layer
-- [ ] 6. Create handler in `backend/internal/handlers/`
+- [ ] 6. Create handler
 - [ ] 7. Register routes
-- [ ] 8. Run `make swagger`
+- [ ] 8. Regenerate API specs (if applicable, e.g. `make swagger`)
 
 ## Frontend Tasks (if applicable)
 
 ### Service Layer
-- [ ] 9. Run `make generate-api-types`
-- [ ] 10. Create API service in `web-frontend/services/`
+- [ ] 9. Regenerate API types (if applicable, e.g. `make generate-api-types`)
+- [ ] 10. Create API service
 
 ### Components Layer
-- [ ] 11. Create components in `web-frontend/components/`
+- [ ] 11. Create components
 - [ ] 12. Add loading states
 - [ ] 13. Add error states
 - [ ] 14. Add empty states
 - [ ] 15. Add accessibility attributes (aria-labels, keyboard nav)
 
 ### Pages Layer
-- [ ] 16. Create/update pages in `web-frontend/app/`
+- [ ] 16. Create/update pages
 
 ## Security Tasks (if applicable)
 
@@ -121,18 +121,7 @@ Brief description from design.
 
 ## Files Affected
 
-### Backend
-- `backend/internal/models/` - modify
-- `backend/internal/repository/` - create/modify
-- `backend/internal/services/` - create/modify
-- `backend/internal/handlers/` - create/modify
-- `backend/migrations/` - create (if needed)
-
-### Frontend
-- `web-frontend/types/api.ts` - generated
-- `web-frontend/services/` - create/modify
-- `web-frontend/components/` - create/modify
-- `web-frontend/app/` - create/modify
+List the files to be created or modified based on the project structure from `.opencode/opencode.json`.
 
 ## Commit Strategy
 
@@ -148,7 +137,7 @@ Based on design, commits should be:
 
 ## Acceptance Criteria
 - [ ] All tests pass
-- [ ] `make validate` passes
+- [ ] Validation passes (run the unit test command from profile)
 - [ ] Code follows project patterns from design
 - [ ] Security requirements met (auth, validation, parameterized queries)
 - [ ] Performance targets met (indexes, caching, pagination)
