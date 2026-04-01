@@ -98,7 +98,23 @@ Generate a comprehensive summary:
 - [ ] No dead code remaining
 ```
 
-### Step 5: Write Commit Message(s)
+### Step 5: Decide Commit Structure
+
+Before writing messages, decide how many commits to create. Apply the **atomic commit** rules from the `git-workflow` skill:
+
+1. Review the full diff: `git diff <default_branch>...HEAD --stat`
+2. Group changes by logical unit — ask "can I describe this in one subject line without using 'and'?"
+3. Typical split for a feature branch:
+   - Data layer changes (migration, model) → one commit
+   - Business logic + API handler → one commit
+   - Tests → one commit per layer, or bundled with its layer if small
+   - UI/client changes → one commit
+   - Formatter/lint-only fixes → one commit (`chore: format`)
+4. If the entire feature is small and cohesive, one commit is correct — don't split for the sake of it
+
+Document the decided structure in the summary under "Commits to Create".
+
+### Step 6: Write Commit Message(s)
 
 Follow conventional commits format:
 
@@ -140,7 +156,7 @@ fix(frontend): correct booking date validation
 chore: update dependencies
 ```
 
-### Step 6: Prepare Commit
+### Step 7: Prepare Commit
 
 **Ask user for approval:**
 
@@ -181,7 +197,7 @@ AWAITING USER APPROVAL
 1. Never commit without user approval
 2. Keep commit messages under 72 characters for subject line
 3. Use conventional commits format
-4. Group related changes into logical commits
-5. Include "what" and "why" in commit message
-6. One logical change per commit
+4. Apply atomic commit rules from `git-workflow` skill — one logical change per commit
+5. Include "what" and "why" in commit message body when the change is non-obvious
+6. Every commit must leave the project in a working state — never commit broken code
 7. Always read `profile.default_branch` — never hardcode branch names

@@ -116,7 +116,59 @@ docs(api): update OpenAPI annotations
 4. **No period at end**: Not a sentence
 5. **Reference issues**: `Fixes #123` in footer if applicable
 
-## PR Workflow
+## Atomic Commits
+
+An atomic commit contains **one logical change** — it can be understood, reviewed, and reverted in isolation without breaking anything else.
+
+### What belongs in one commit
+
+| Situation | Rule |
+|-----------|------|
+| New feature touches backend + tests | One commit — the feature and its tests are inseparable |
+| Bug fix + unrelated cleanup spotted nearby | Two commits — fix first, cleanup separately |
+| Schema migration + model update | One commit — they must stay in sync |
+| Refactor + new feature | Two commits — never mix behavior change with refactor |
+| Formatter/linter auto-fixes | Separate commit — `chore: format` or `style: lint fixes` |
+| Dependency update | Separate commit — `chore: update dependencies` |
+| Multiple unrelated features | One commit per feature — never bundle |
+
+### The single-responsibility test
+
+Before committing, ask: **"Can I describe this change in one conventional commit subject line without using 'and'?"**
+
+- "add user ratings endpoint" → atomic
+- "add user ratings endpoint and fix date picker bug" → not atomic — split it
+
+### How to split work into commits mid-feature
+
+A feature implementation typically produces commits in this order:
+
+```
+feat(db): add ratings migration and model
+feat(backend): add ratings service and handler
+test(backend): add ratings unit tests
+feat(frontend): add ratings UI component
+test(frontend): add ratings component tests
+chore: format and lint fixes
+```
+
+Each commit builds on the previous but is independently understandable.
+
+### When a single commit is correct for a whole feature
+
+If the feature is small enough that all changes (backend + frontend + tests) fit naturally in one subject line and reviewing them together makes more sense than apart, one commit is fine:
+
+```
+feat(api): add health check endpoint
+```
+
+Use judgment — the goal is reviewability, not commit count.
+
+### Never do this
+
+- Commit partially broken code — every commit must leave the project in a working state
+- Bundle a fix with unrelated cleanup to keep the count low
+- Leave formatter changes mixed into feature commits — they obscure the real diff
 
 ### Creating a PR
 
