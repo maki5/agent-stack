@@ -4,4 +4,4 @@ node_modules/
 dist/
 .bun/
 bun.lockb
-tmp/
+tmp*/

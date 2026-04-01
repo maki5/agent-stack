@@ -5,16 +5,14 @@
  * Directory layout produced:
  *
  *   <target>/.opencode/
- *     opencode.json          ← stub; model config, completed by /setup
- *     profile.json           ← stub; project profile, completed by /setup
+ *     opencode.json          ← stub; model config
+ *     profile.json           ← written by 'bunx agent-stack setup'
  *     agents/
  *       *.md                 ← copied from agents/core/
  *     commands/
- *       setup.md             ← /setup slash command
+ *       setup.md             ← /setup slash command (agent post-setup: generates dev agents)
  *     skills/
  *       <name>/SKILL.md      ← copied from skills/core/
- *     tools/
- *       setup_wizard.ts      ← interactive setup wizard tool
  */
 
 import { existsSync, mkdirSync, writeFileSync, cpSync } from "fs";
@@ -185,13 +183,7 @@ export async function generate(opts: GenerateOptions = {}): Promise<void> {
   copyDir(coreSkillsSrc, coreSkillsDest);
   console.log("  ✓ .opencode/skills/ (core skills)");
 
-  // ── 5. Tools ────────────────────────────────────────────────────────────────
-  const toolsSrc = join(PACKAGE_ROOT, "tools");
-  const toolsDest = join(opencodeDir, "tools");
-  copyDir(toolsSrc, toolsDest);
-  console.log("  ✓ .opencode/tools/ (setup_wizard)");
-
   console.log("\nDone.\n");
-  console.log("Next step: open this project in OpenCode and run /setup");
-  console.log("The setup wizard will complete your configuration and generate developer agents.\n");
+  console.log("Next step: run  bunx agent-stack setup  to configure your project.");
+  console.log("Then open it in OpenCode — agents will be ready.\n");
 }

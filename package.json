@@ -16,7 +16,6 @@
     "dist/",
     "agents/",
     "skills/",
-    "tools/",
     "templates/"
   ],
   "dependencies": {

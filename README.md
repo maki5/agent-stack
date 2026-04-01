@@ -1,6 +1,6 @@
 # agent-stack
 
-Scaffolds a universal multi-agent [OpenCode](https://opencode.ai) workflow into any project. One command bootstraps your `.opencode/` directory with coordinator agents, core skills, and a stub config — then a `/setup` agent inside OpenCode completes the configuration and generates tech-specific developer agents for your stack.
+Scaffolds a universal multi-agent [OpenCode](https://opencode.ai) workflow into any project. Two commands set everything up — then open OpenCode and start building.
 
 ## Prerequisites
 
@@ -18,36 +18,44 @@ cd my-project
 bunx agent-stack init
 ```
 
-This copies the universal agent and skill files into `.opencode/` and writes a stub `opencode.json`:
+This copies the universal agent and skill files into `.opencode/` and writes a stub config:
 
 ```
 my-project/
 └── .opencode/
-    ├── opencode.json      ← stub config (complete via /setup)
-    ├── agents/
-    │   └── core/          ← 13 universal agents
-    └── skills/            ← 14 core skills
+    ├── opencode.json      ← model config stub
+    ├── profile.json       ← project profile stub (filled in step 2)
+    ├── agents/            ← 14 universal agents
+    ├── commands/
+    │   └── setup.md       ← /setup slash command
+    └── skills/            ← 15 core skills
 ```
 
-No questions asked. No tech-specific choices made yet — that's the setup agent's job.
+### Step 2 — Configure
 
-### Step 2 — Complete configuration in OpenCode
+Still in the terminal (before opening OpenCode), run:
 
-Open your project in OpenCode and run:
-
-```
-/setup
+```bash
+bunx agent-stack setup
 ```
 
-The setup agent guides you through a conversational wizard inside OpenCode that:
+This launches an interactive terminal wizard that:
 
-1. Asks about your project's stack (languages, frameworks, layers)
-2. Fills in `profile.commands` — build, test, lint, format, typecheck commands
-3. Fills in `profile.paths` — where your source files live per layer
-4. Writes tech-specific developer agents (e.g. `backend-developer.md`, `mobile-developer.md`) generated fresh for your stack
-5. Resolves the right skills per agent role and writes `profile.skills`
+1. Auto-detects your project name, branch, stack, and commands from the filesystem
+2. Prompts you to confirm or override each field
+3. Writes `.opencode/profile.json` with your project config
+4. Updates `.opencode/opencode.json` with your chosen model assignments
 
-When done, your `.opencode/opencode.json` is fully configured and your project has developer agents tailored to your tech.
+### Step 3 — Open OpenCode and run /setup
+
+```bash
+opencode
+```
+
+Then run `/setup` once. The setup agent reads your already-written `profile.json` and:
+
+1. Resolves the right skills per agent role
+2. Generates tech-specific developer agents (e.g. `backend-developer.md`) from your stack
 
 ## Agents
 
