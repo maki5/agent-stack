@@ -190,6 +190,7 @@ For each skill name: skill("<name>")
 
 If `skills.<agent-id>` is not set, load defaults:
 \```
+skill("coding-discipline")
 skill("self-healing")
 skill("output-discipline")
 \```

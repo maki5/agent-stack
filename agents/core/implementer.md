@@ -97,6 +97,7 @@ For each skill name: skill("<name>")
 If `skills.implementer` is not set, load defaults:
 ```
 skill("git-workflow")
+skill("coding-discipline")
 skill("code-review")
 skill("self-healing")
 skill("output-discipline")

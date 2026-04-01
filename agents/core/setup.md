@@ -131,8 +131,8 @@ Reply with answers 1–24 and your model choice (A/B/C).
 
 | Role | Always? | Only if | Default skills |
 |------|---------|---------|----------------|
-| `implementer` | yes | — | `git-workflow`, `code-review`, `self-healing`, `output-discipline` |
-| `debugger` | yes | — | `git-workflow`, `code-review`, `self-healing`, `output-discipline` |
+| `implementer` | yes | — | `git-workflow`, `coding-discipline`, `code-review`, `self-healing`, `output-discipline` |
+| `debugger` | yes | — | `git-workflow`, `coding-discipline`, `code-review`, `self-healing`, `output-discipline` |
 | `setup` | yes | — | `agent-creator`, `skills-creator`, `find-skills` |
 | `researcher` | yes | — | `research`, `architecture-patterns` |
 | `designer` | yes | — | `architecture-patterns`, `mermaid-diagrams` |
@@ -145,10 +145,10 @@ Reply with answers 1–24 and your model choice (A/B/C).
 | `formatter` | yes | — | `self-healing`, `output-discipline` |
 | `commiter` | yes | — | `git-workflow`, `output-discipline` |
 | `issue-manager` | yes | — | `github-issues`, `github-workflow` |
-| `backend-developer` | no | `has_backend` | `self-healing`, `output-discipline` |
-| `frontend-developer` | no | `has_frontend` | `self-healing`, `output-discipline` |
-| `mobile-developer` | no | `has_mobile` | `self-healing`, `output-discipline` |
-| `infra-developer` | no | `has_infra` | `self-healing`, `output-discipline` |
+| `backend-developer` | no | `has_backend` | `coding-discipline`, `self-healing`, `output-discipline` |
+| `frontend-developer` | no | `has_frontend` | `coding-discipline`, `self-healing`, `output-discipline` |
+| `mobile-developer` | no | `has_mobile` | `coding-discipline`, `self-healing`, `output-discipline` |
+| `infra-developer` | no | `has_infra` | `coding-discipline`, `self-healing`, `output-discipline` |
 
 For each role, also run `npx skills find <tech> <role>` to find tech-specific skills and append them. If a critical skill is missing, create it with `skills-creator`. If `npx` fails, fall back to defaults only and note the affected roles in the summary.
 
