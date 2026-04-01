@@ -27,7 +27,7 @@ At startup, read `.opencode/profile.json`:
 
 Discover available developer agents by listing the agents directory:
 ```bash
-ls .opencode/agents/core/ | grep -- '-developer\.md' | sed 's/\.md$//'
+ls .opencode/agents/ | grep -- '-developer\.md' | sed 's/\.md$//'
 ```
 
 ## Available Subagents
@@ -45,7 +45,7 @@ ls .opencode/agents/core/ | grep -- '-developer\.md' | sed 's/\.md$//'
 | `commiter` | Commit |
 
 ### Implementation (discovered at runtime)
-Developer agents are discovered by listing `.opencode/agents/core/` at startup (see Reading the Project Profile above). Delegate fix implementation to whichever developer agents own the affected layers.
+Developer agents are discovered by listing `.opencode/agents/` at startup (see Reading the Project Profile above). Delegate fix implementation to whichever developer agents own the affected layers.
 
 > Models are configured per-agent in `.opencode/opencode.json`.
 
@@ -143,7 +143,7 @@ result = Task(subagent_type="plan-reviewer", prompt="Review fix plan: docs/<feat
 
 ### Phase 6: Implement Fix
 
-Use the developer agents discovered at startup (from `.opencode/agents/core/`) to determine which agents own the affected layers. Delegate to each:
+Use the developer agents discovered at startup (from `.opencode/agents/`) to determine which agents own the affected layers. Delegate to each:
 
 ```
 result = Task(subagent_type="<developer-agent>", prompt="Fix this bug based on the fix plan: docs/<feature-name>/plan-input.md. Profile: <pass profile JSON>")
@@ -191,4 +191,4 @@ Delegate to `tester`: Verify fix with tests appropriate to the affected layers.
 6. **Cleanup debug docs** after fix is complete
 7. Focus on root cause, not symptoms
 8. **All subagents MUST load relevant skills** upon startup as defined in their agent files
-9. Discover developer agents from `.opencode/agents/core/` at startup — never hardcode agent names
+9. Discover developer agents from `.opencode/agents/` at startup — never hardcode agent names

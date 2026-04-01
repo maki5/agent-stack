@@ -9,9 +9,9 @@ This skill teaches you how to write agent `.md` files for the agent-stack system
 
 ## File Location
 
-All agent files go in `.opencode/agents/core/`. The filename (without `.md`) becomes the agent's ID used in `Task()` calls and `@mentions`.
+All agent files go in `.opencode/agents/`. The filename (without `.md`) becomes the agent's ID used in `Task()` calls and `@mentions`.
 
-Example: `.opencode/agents/core/backend-developer.md` → agent ID is `backend-developer`.
+Example: `.opencode/agents/backend-developer.md` → agent ID is `backend-developer`.
 
 ## Required YAML Frontmatter
 

@@ -5,9 +5,12 @@
  * Directory layout produced:
  *
  *   <target>/.opencode/
- *     opencode.json          ← stub; completed by /setup agent
+ *     opencode.json          ← stub; model config, completed by /setup
+ *     profile.json           ← stub; project profile, completed by /setup
  *     agents/
- *       core/                ← copied from agents/core/
+ *       *.md                 ← copied from agents/core/
+ *     commands/
+ *       setup.md             ← /setup slash command
  *     skills/
  *       <name>/SKILL.md      ← copied from skills/core/
  */
@@ -142,7 +145,7 @@ export async function generate(opts: GenerateOptions = {}): Promise<void> {
   const opencodeJsonPath = join(opencodeDir, "opencode.json");
   if (!existsSync(opencodeJsonPath)) {
     writeFile(opencodeJsonPath, OPENCODE_JSON_STUB);
-    console.log("  ✓ .opencode/opencode.json (stub — complete via /setup)");
+    console.log("  ✓ .opencode/opencode.json");
   } else {
     console.log("  ↷ .opencode/opencode.json already exists — skipped");
   }
@@ -158,11 +161,23 @@ export async function generate(opts: GenerateOptions = {}): Promise<void> {
 
   // ── 2. Core agents ─────────────────────────────────────────────────────────
   const coreAgentsSrc = join(PACKAGE_ROOT, "agents", "core");
-  const coreAgentsDest = join(opencodeDir, "agents", "core");
+  const coreAgentsDest = join(opencodeDir, "agents");
   copyDir(coreAgentsSrc, coreAgentsDest);
-  console.log("  ✓ .opencode/agents/core/");
+  console.log("  ✓ .opencode/agents/");
 
-  // ── 3. Core skills ──────────────────────────────────────────────────────────
+  // ── 3. /setup command ──────────────────────────────────────────────────────
+  const setupCommandPath = join(opencodeDir, "commands", "setup.md");
+  if (!existsSync(setupCommandPath)) {
+    writeFile(
+      setupCommandPath,
+      `---\ndescription: Run the project setup wizard\nagent: setup\n---\nRun the setup wizard to configure this project.\n`
+    );
+    console.log("  ✓ .opencode/commands/setup.md");
+  } else {
+    console.log("  ↷ .opencode/commands/setup.md already exists — skipped");
+  }
+
+  // ── 4. Core skills ──────────────────────────────────────────────────────────
   const coreSkillsSrc = join(PACKAGE_ROOT, "skills", "core");
   const coreSkillsDest = join(opencodeDir, "skills");
   copyDir(coreSkillsSrc, coreSkillsDest);
@@ -170,5 +185,5 @@ export async function generate(opts: GenerateOptions = {}): Promise<void> {
 
   console.log("\nDone.\n");
   console.log("Next step: open this project in OpenCode and run /setup");
-  console.log("The setup agent will complete opencode.json and generate your developer agents.\n");
+  console.log("The setup wizard will complete your configuration and generate developer agents.\n");
 }

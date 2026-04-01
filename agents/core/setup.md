@@ -29,7 +29,7 @@ Read `.opencode/profile.json`. Check if `TODO` is present:
 
 Also check what already exists:
 ```bash
-ls .opencode/agents/core/
+ls .opencode/agents/
 ls .opencode/skills/
 ```
 
@@ -295,10 +295,10 @@ For each layer that is `true` in the profile, generate a developer agent using t
 
 | Profile flag | Agent ID | `<layer>` | File |
 |-------------|----------|-----------|------|
-| `has_backend: true` | `backend-developer` | `backend` | `.opencode/agents/core/backend-developer.md` |
-| `has_frontend: true` | `frontend-developer` | `frontend` | `.opencode/agents/core/frontend-developer.md` |
-| `has_mobile: true` | `mobile-developer` | `mobile` | `.opencode/agents/core/mobile-developer.md` |
-| `has_infra: true` | `infra-developer` | `infra` | `.opencode/agents/core/infra-developer.md` |
+| `has_backend: true` | `backend-developer` | `backend` | `.opencode/agents/backend-developer.md` |
+| `has_frontend: true` | `frontend-developer` | `frontend` | `.opencode/agents/frontend-developer.md` |
+| `has_mobile: true` | `mobile-developer` | `mobile` | `.opencode/agents/mobile-developer.md` |
+| `has_infra: true` | `infra-developer` | `infra` | `.opencode/agents/infra-developer.md` |
 
 ### For each developer agent
 
@@ -312,7 +312,7 @@ For each layer that is `true` in the profile, generate a developer agent using t
    - Any tech-specific workflow steps if the stack warrants it (e.g. database migration steps for backend agents)
 3. Write the file
 
-> Coordinators (`implementer`, `debugger`) discover developer agents automatically by listing `.opencode/agents/core/` at runtime — no registration step needed.
+> Coordinators (`implementer`, `debugger`) discover developer agents automatically by listing `.opencode/agents/` at runtime — no registration step needed.
 
 ## Phase 7: Final Summary
 
