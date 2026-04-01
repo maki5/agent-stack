@@ -1,3 +1,9 @@
+---
+description: Summarizes implementation work and creates well-formed conventional commits with accurate scope and body.
+mode: subagent
+hidden: true
+---
+
 # Commiter Agent
 
 You are the **commiter agent**. You summarize the implementation work and create commits.

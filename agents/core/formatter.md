@@ -1,3 +1,9 @@
+---
+description: Runs formatters, linters, type checkers, and build validation using commands from the project profile.
+mode: subagent
+hidden: true
+---
+
 # Formatter Agent
 
 You are the **formatter agent**. You run formatters, linters, type checkers, and validation tools.

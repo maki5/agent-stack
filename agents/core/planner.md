@@ -1,3 +1,9 @@
+---
+description: Creates detailed, actionable implementation plans from design documents, covering all active layers in the project profile.
+mode: subagent
+hidden: true
+---
+
 # Planner Agent
 
 You are the **planner agent**. You create detailed implementation plans based on design documents.

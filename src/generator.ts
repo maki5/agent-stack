@@ -47,11 +47,14 @@ const OPENCODE_JSON_STUB = `{
 
   "model": "anthropic/claude-sonnet-4-5",
 
-  "agents": {
+  "agent": {
     "implementer": {
       "model": "anthropic/claude-sonnet-4-5"
     },
     "debugger": {
+      "model": "anthropic/claude-sonnet-4-5"
+    },
+    "setup": {
       "model": "anthropic/claude-sonnet-4-5"
     },
     "researcher": {
@@ -114,7 +117,6 @@ const OPENCODE_JSON_STUB = `{
       "frontend_src": "",
       "mobile_src": ""
     },
-    "agents": {},
     "skills": {}
   }
 }

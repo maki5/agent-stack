@@ -17,13 +17,6 @@ export interface ProfilePaths {
   [key: string]: string | undefined;
 }
 
-export interface DeveloperAgentEntry {
-  /** Agent file path relative to .opencode/agents/ */
-  promptFile: string;
-  /** Human-readable tech description, e.g. "Go + PostgreSQL" */
-  tech: string;
-}
-
 export interface Profile {
   project_name: string;
   description: string;
@@ -49,9 +42,6 @@ export interface Profile {
 
   // ── Source paths (read by agents to locate files) ─────────────────────────
   paths: ProfilePaths;
-
-  // ── Generated developer agents (keyed by role, e.g. "backend-developer") ──
-  agents: Record<string, DeveloperAgentEntry>;
 
   // ── Per-agent skill lists (populated by setup agent) ─────────────────────
   /** Keys are agent role names; values are arrays of skill names to load */

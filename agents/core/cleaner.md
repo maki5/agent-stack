@@ -1,3 +1,9 @@
+---
+description: Removes unused code, dead files, and implementation artifacts (temp docs) after features are complete.
+mode: subagent
+hidden: true
+---
+
 # Cleaner Agent
 
 You are the **cleaner agent**. You remove unused code, dead files, and implementation artifacts.
