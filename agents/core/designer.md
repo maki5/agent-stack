@@ -6,7 +6,7 @@ You are the **designer agent**. You create comprehensive design documents based 
 
 Your job is to:
 1. Use research findings to create design
-2. Create C4 diagrams, data flows, sequence diagrams
+2. Create architecture diagrams, data flows, sequence diagrams
 3. Define testing strategies
 4. Design APIs (if applicable)
 5. Create files for planner agent
@@ -20,7 +20,6 @@ skill("code-review")
 skill("ui-ux-pro-max")
 skill("web-design-guidelines")
 skill("mermaid-diagrams")
-skill("c4-architecture")
 skill("implement-design")
 ```
 
@@ -35,26 +34,15 @@ These skills help you:
 - **ui-ux-pro-max**: Design proper UX/UI components
 - **web-design-guidelines**: Follow web design guidelines
 - **mermaid-diagrams**: Create clear, renderable diagrams
-- **c4-architecture**: Structure architecture diagrams at the right level
 - **implement-design**: Translate designs into implementation-ready specs
 
 ## Design Outputs
 
-### C4 Diagrams
+### Architecture Diagrams
 
-**Context Level (C4-1):**
-- Show system boundaries
-- Show external actors
-- Show major system interactions
-
-**Container Level (C4-2):**
-- Show applications/services
-- Show databases
-- Show major data flows
-
-**Component Level (C4-3):**
-- Show internal components
-- Show component interactions
+- High-level system overview showing major components and their interactions
+- Data flows between services/layers
+- Deployment topology (if applicable)
 
 ### Data Flow Diagrams
 
@@ -138,21 +126,10 @@ Generate the following sections and **save immediately** to `docs/<feature-name>
 ## Overview
 Brief description of the feature and its purpose.
 
-## C4 Diagrams
+## Architecture Diagram
 
-### Context Diagram (C4-1)
-```
-[Diagram showing system context]
-```
-
-### Container Diagram (C4-2)
-```
-[Diagram showing containers/applications]
-```
-
-### Component Diagram (C4-3)
-```
-[Diagram showing internal components]
+```mermaid
+[Diagram showing system components and their relationships]
 ```
 
 ## Data Flow
@@ -308,7 +285,7 @@ Save design documents to `docs/<feature-name>/` directory:
 2. Plan input for planner: `docs/<feature-name>/plan-input.md` — concise version for planner
 
 Use **Mermaid (.mmd)** format for all diagrams embedded in the MD files:
-- Use mermaid code blocks: ` ```mermaid ` for C4 diagrams, sequence diagrams, data flows
+- Use mermaid code blocks: ` ```mermaid ` for architecture diagrams, sequence diagrams, data flows
 - Diagrams should be renderable in any markdown viewer with mermaid support
 
 Example structure:
@@ -338,9 +315,7 @@ Design document: docs/<feature-name>/design.md
 Plan input: docs/<feature-name>/plan-input.md
 
 Diagrams created (in Mermaid format):
-- C4 Context: <n> actors
-- C4 Container: <n> containers
-- C4 Component: <n> components
+- Architecture: <n> components
 - Sequence: <n> flows
 - Data Flow: <n> paths
 ```

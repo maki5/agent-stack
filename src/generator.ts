@@ -111,7 +111,6 @@ function resolveSkills(answers: WizardAnswers): SkillDescriptor[] {
     "output-discipline",
     "find-skills",
     "mermaid-diagrams",
-    "c4-architecture",
     "architecture-patterns",
     "implement-design",
     "ui-ux-pro-max",

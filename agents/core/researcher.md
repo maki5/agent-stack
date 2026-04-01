@@ -17,7 +17,6 @@ Load these skills upon startup. Adapt based on what's relevant to the project pr
 ```
 skill("research")
 skill("architecture-patterns")
-skill("c4-architecture")
 ```
 
 Then load tech-specific skills based on the profile. Examples:

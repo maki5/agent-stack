@@ -48,7 +48,7 @@ Use these flags to decide which phases to run:
 | Agent | Purpose |
 |-------|---------|
 | `researcher` | Research system architecture and patterns |
-| `designer` | System design (C4 diagrams, API, sequences) |
+| `designer` | System design (architecture diagrams, API, sequences) |
 | `ui-designer` | UI mockups (if `has_frontend: true`) |
 | `planner` | Technical implementation plan |
 | `plan-reviewer` | Validate plan before user sees it |
