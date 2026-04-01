@@ -17,7 +17,7 @@ metadata:
 
 ## What I Do
 
-I provide patterns and procedures for implementing self-healing agent workflows - automatically catching and fixing errors without user intervention.
+I provide patterns and procedures for implementing self-healing agent workflows — automatically catching and fixing errors without user intervention.
 
 ## When to Use Me
 
@@ -51,32 +51,21 @@ Every implementation chunk should pass through a validation gate:
 
 ### After Each Implementation Chunk
 
+Read `profile.commands` from `.opencode/opencode.json` to get the actual validation commands. Then:
+
 ```markdown
 ### Step X: Validate Chunk
 
-Run static validation:
+Run static validation using commands from profile.commands:
 
 ```bash
-cd backend && go vet ./...
-cd web-frontend && npx tsc --noEmit
-make lint
+# profile.commands.typecheck (if set)
+# profile.commands.lint
 ```
 
 If any command fails:
-
-```
-Delegate to @validation-guard:
-- Mode: static
-- Changed files: <list>
-- Phase: <chunk-name>
-```
-
-Based on validation-guard output:
-- If PASS → Proceed to commit
-- If BLOCKERS → Delegate to @auto-fix for each BLOCKER
-- If only WARNINGS → Log and proceed
-
-After auto-fix completes:
+- Identify the failing file and error
+- Attempt auto-fix (see Auto-Fix Delegation Pattern below)
 - Re-run validation
 - Retry up to 3 times
 - If still failing → Escalate to user
@@ -84,30 +73,21 @@ After auto-fix completes:
 
 ### Post-Implementation Runtime Validation
 
+If the project has a running dev environment, perform a runtime check:
+
 ```markdown
 ### Runtime Validation Phase
 
-Check if dev-suite is running:
-
-```bash
-curl -sf http://localhost:3000/health > /dev/null 2>&1 && echo "running" || echo "stopped"
-```
+Check if the dev environment is running (project-specific health check).
 
 If running:
-```
-Delegate to @validation-guard:
-- Mode: runtime
-- Changed files: <all-changed-files>
-- Phase: post-implementation
-```
-
-Process findings:
-- All BLOCKERS → Delegate to @auto-fix
-- Re-validate after fixes (max 3 attempts)
+- Run integration/smoke tests
+- For each BLOCKER: attempt auto-fix
+- Re-validate (max 3 attempts)
 - WARNINGS → Log but proceed
 
-If dev-suite not running:
-- Add WARNING: "Runtime validation skipped - dev-suite not running"
+If dev environment not running:
+- Add WARNING: "Runtime validation skipped — dev environment not running"
 - Proceed to reviews
 ```
 
@@ -118,36 +98,31 @@ If dev-suite not running:
 ```markdown
 Fix individual BLOCKER:
 
-```
-@auto-fix
-
-Source: validation-guard
-Issue: SQL query failing - column "owner_id" does not exist
-File: backend/internal/handlers/workshop.go:45
-Context: SELECT owner_id FROM workshops WHERE id = $1
+Source: validation
+Issue: <error description>
+File: <path>:<line>
+Context: <relevant code snippet>
 Attempt: 1
-```
 
-Wait for auto-fix response:
-- If SUCCESS → Note commit hash, continue
-- If RETRY NEEDED → Re-delegate with Attempt: 2
+Wait for fix:
+- If SUCCESS → Note commit, continue
+- If RETRY NEEDED → Re-attempt with Attempt: 2
 - If ESCALATION → Stop workflow, report to user
 ```
 
 ### Multiple Issues Fix
 
-Process BLOCKERS in order of severity:
+Process BLOCKERs in order of severity:
 
 ```markdown
-1. SQL/Database errors (break functionality)
-2. Handler errors (500 errors)
-3. UI errors (broken interactions)
-4. Type errors (compilation)
-5. Lint errors (code quality)
+1. Database/schema errors (break functionality)
+2. Compilation/type errors
+3. Runtime errors
+4. Lint errors (code quality)
 
 For each BLOCKER:
-- Delegate to @auto-fix
-- Wait for result
+- Attempt fix
+- Verify fix
 - If successful, proceed to next
 - If escalated, stop and report all pending issues
 ```
@@ -166,7 +141,7 @@ Retry state:
 
 Loop:
 1. attempts += 1
-2. Delegate to @auto-fix with attempt number
+2. Attempt fix
 3. If SUCCESS → break
 4. If ESCALATION → escalate to user
 5. If attempts >= max_attempts → escalate to user
@@ -176,30 +151,24 @@ Loop:
 
 ### Validation Retry
 
-After auto-fix commits changes:
+After fix is applied:
 
 ```markdown
 Re-validation:
 
-```bash
-# Run the same checks that found the issue
-cd backend && go vet ./...
-cd web-frontend && npx tsc --noEmit
-make lint
-make test-backend  # or affected tests
-```
+Run the same commands that found the issue (from profile.commands).
 
 If validation passes:
-- ✓ Fix successful
+- Fix successful ✓
 
 If validation fails with SAME error:
 - Increment retry counter
-- Re-delegate to @auto-fix
+- Re-attempt fix
 
 If validation fails with NEW error:
 - Treat as new issue
 - Reset retry counter
-- Delegate to @auto-fix
+- Begin new fix attempt
 ```
 
 ## Review Integration Pattern
@@ -207,27 +176,22 @@ If validation fails with NEW error:
 ### Auto-Fix After Reviews
 
 ```markdown
-After @review-standard or @review-independent:
+After review pass:
 
-Parse review output for BLOCKERS:
+Parse review output for BLOCKERS (P1):
 
-For each 🔴 BLOCKER:
-```
-@auto-fix
+For each P1 BLOCKER:
+- Identify the file and line
+- Delegate fix to the appropriate developer agent
+- Re-run tests to verify
+- Re-run review to confirm fix
 
-Source: review-standard
-Issue: <blocker description>
-File: <file>:<line>
-Context: <code snippet from review>
-Attempt: 1
-```
-
-Wait for all auto-fixes to complete:
+Wait for all fixes to complete:
 - All SUCCESS → Re-run review
-- Any ESCALATION → Report to user with findings
+- Any ESCALATION → Report to user with all findings
 
 After re-review:
-- If still BLOCKERS → Re-run auto-fix (Attempt 2)
+- If still BLOCKERS → Re-attempt fix (Attempt 2)
 - Max 3 review cycles total
 ```
 
@@ -242,10 +206,10 @@ Review cycle counter:
 
 Loop:
 1. cycle += 1
-2. Delegate to @review-standard
-3. If PASS → proceed to @review-independent
+2. Run review pass
+3. If PASS → proceed to next pass
 4. If BLOCKERS:
-   - Delegate to @auto-fix
+   - Delegate fixes
    - If cycle >= max_cycles → Escalate to user
    - Else → continue loop
 ```
@@ -258,13 +222,12 @@ These can be automatically fixed:
 
 | Error Type | Example | Fix Approach |
 |------------|---------|--------------|
-| SQL column typo | `owner_id` vs `user_id` | Check schema, correct column name |
-| Missing import | `undefined: WorkshopInput` | Add import statement |
-| Missing error check | `workshop, _ := ...` | Add error handling |
-| Missing handler | Button without onClick | Add handler reference |
-| Type mismatch | `useState<string>(0)` | Correct type annotation |
-| Syntax error | Missing comma | Add punctuation |
-| Stale content | Old component still present | Remove old code |
+| Column/field name typo | Wrong field name in query | Check schema, correct name |
+| Missing import | Undefined symbol | Add import statement |
+| Missing error check | Ignored error return | Add error handling |
+| Type mismatch | Wrong type annotation | Correct type |
+| Syntax error | Missing bracket/comma | Add punctuation |
+| Stale content | Old code still present | Remove old code |
 | Simple lint error | Unused variable | Remove or use variable |
 
 ### Non-Auto-Fixable Errors
@@ -290,15 +253,13 @@ Validation State:
 {
   "phase": "chunk-2",
   "files_changed": [...],
-  "validation_mode": "static",
   "findings": {
     "blockers": [...],
     "warnings": [...]
   },
   "retry_counts": {
     "file:line:error": 2
-  },
-  "commits": [...]
+  }
 }
 ```
 
@@ -308,15 +269,15 @@ Validation State:
 
 Self-healing should be silent unless:
 - Errors found (report findings)
-- Fix applied (report commit)
+- Fix applied (report what was fixed)
 - Escalation needed (report to user)
 
 ### Success Reporting
 
 Minimal success messages:
 ```
-✓ Chunk 2 validated and committed
-✓ 3 issues auto-fixed (commits: abc123, def456, ghi789)
+✓ Chunk 2 validated
+✓ 3 issues auto-fixed
 ✓ Runtime validation passed
 ```
 
@@ -326,16 +287,16 @@ Comprehensive failure messages:
 ```
 ❌ Validation Failed After 3 Attempts
 
-Issue: SQL query still failing after auto-fix attempts
-File: backend/internal/handlers/workshop.go:45
+Issue: <error description>
+File: <path>:<line>
 
 Attempts:
-1. Changed owner_id → user_id - Result: Still failing
-2. Checked schema, changed to ownerId - Result: Still failing  
-3. Added debug logging - Result: Error persists
+1. <what was tried> — Result: Still failing
+2. <what was tried> — Result: Still failing
+3. <what was tried> — Result: Error persists
 
-Current Error: column "ownerId" does not exist
-Recommendation: Check actual database schema with \d workshops
+Current Error: <error message>
+Recommendation: <what human should investigate>
 Requires user intervention.
 ```
 
@@ -343,76 +304,8 @@ Requires user intervention.
 
 1. **Fail Fast**: Run validation immediately after each change
 2. **Minimal Fixes**: Auto-fix should make smallest possible change
-3. **Validate Fixes**: Never assume fix works - always re-validate
+3. **Validate Fixes**: Never assume fix works — always re-validate
 4. **Retry Limits**: Max 3 attempts prevents infinite loops
 5. **Clear Logging**: Track what was tried and why it failed
 6. **Safe Escalation**: When in doubt, escalate to user
-7. **Commit Often**: Each fix gets its own commit for traceability
-
-## Integration Example
-
-Complete workflow integration:
-
-```markdown
-## Phase 3: Implement (with Self-Healing)
-
-For each chunk:
-
-1. **Implement**
-   - Write code following patterns
-   
-2. **Static Validation** (automatic)
-   ```bash
-   go vet && tsc --noEmit && make lint
-   ```
-   If fails → @validation-guard → @auto-fix (max 3x)
-   
-3. **Unit Tests** (automatic)
-   ```bash
-   make test-backend  # or frontend-test
-   ```
-   If fails → Analyze failures → @auto-fix test issues
-   
-4. **Commit**
-   - Commit working code
-
-## Phase 4: Runtime Validation (automatic)
-
-If dev-suite running:
-1. @validation-guard (runtime mode)
-2. For each BLOCKER: @auto-fix
-3. Re-validate (max 3x)
-
-## Phase 5-6: Reviews (with Auto-Fix)
-
-1. @review-standard
-2. For each 🔴 BLOCKER: @auto-fix
-3. Re-review (max 3 cycles)
-4. @review-independent
-5. Same auto-fix loop
-```
-
-## Quick Reference
-
-```bash
-# Validation commands
-go vet ./...
-npx tsc --noEmit
-make lint
-make test-backend
-make frontend-test
-curl http://localhost:3000/health
-
-# Delegation templates
-@validation-guard
-Mode: static | runtime
-Changed files: [list]
-Phase: [name]
-
-@auto-fix
-Source: validation-guard | review-standard | review-independent
-Issue: [description]
-File: [path]:[line]
-Context: [code]
-Attempt: [1-3]
-```
+7. **Read Commands from Profile**: Always use `profile.commands` — never hardcode tool commands

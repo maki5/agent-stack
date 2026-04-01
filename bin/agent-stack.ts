@@ -3,24 +3,24 @@
  * agent-stack CLI entrypoint.
  *
  * Usage:
- *   npx agent-stack init           — run wizard and generate .opencode/ in cwd
+ *   npx agent-stack init           — copy universal files into .opencode/ in cwd
  *   npx agent-stack init --dir <p> — generate into a specific directory
  *   npx agent-stack --version      — print version
  *   npx agent-stack --help         — print help
+ *
+ * After running init, open your project in OpenCode and run /setup to complete
+ * the configuration and generate your tech-specific developer agents.
  */
 
 import kleur from "kleur";
-import { runWizard } from "../src/wizard.ts";
 import { generate } from "../src/generator.ts";
-import { installSkillsShSkills } from "../src/skills-installer.ts";
 
 // ─── Version ──────────────────────────────────────────────────────────────────
 
-// Bun can import JSON directly
 import pkg from "../package.json";
 const VERSION: string = pkg.version;
 
-// ─── Argument parsing (no external dep needed) ────────────────────────────────
+// ─── Argument parsing ─────────────────────────────────────────────────────────
 
 function parseArgs(argv: string[]): {
   command: string | null;
@@ -28,7 +28,7 @@ function parseArgs(argv: string[]): {
   showHelp: boolean;
   showVersion: boolean;
 } {
-  const args = argv.slice(2); // strip 'bun' + script path
+  const args = argv.slice(2);
   let command: string | null = null;
   let targetDir = process.cwd();
   let showHelp = false;
@@ -55,14 +55,16 @@ function parseArgs(argv: string[]): {
 function printHelp() {
   console.log(`
 ${kleur.cyan().bold("agent-stack")} v${VERSION}
-OpenCode agent workflow setup for any tech stack.
+OpenCode multi-agent workflow setup for any tech stack.
 
 ${kleur.yellow("USAGE")}
   npx agent-stack <command> [options]
 
 ${kleur.yellow("COMMANDS")}
-  init          Run the wizard and generate .opencode/ setup in the current
-                directory (or --dir <path>).
+  init          Copy universal agents and skills into .opencode/ in the current
+                directory (or --dir <path>), and write a stub opencode.json.
+                Then open the project in OpenCode and run /setup to complete
+                configuration and generate your tech-specific developer agents.
 
 ${kleur.yellow("OPTIONS")}
   --dir, -d     Target project directory (default: current directory)
@@ -92,22 +94,12 @@ async function main() {
 
   if (command === "init") {
     try {
-      // Run wizard
-      const answers = await runWizard();
-
-      // Generate .opencode/ files; returns resolved profile + skills
-      const { skills } = await generate(answers, { targetDir });
-
-      // Install any skills.sh extras (bundled ones already copied by generate)
-      const extraSkillsShRefs = skills.filter((s) => s.source === "skills.sh");
-      if (extraSkillsShRefs.length > 0) {
-        await installSkillsShSkills(extraSkillsShRefs, targetDir);
-      }
+      await generate({ targetDir });
 
       console.log(
         kleur.cyan().bold(
-          "✓ agent-stack setup complete!\n\n" +
-            "Open your project in OpenCode and type /implementer to get started.\n"
+          "✓ agent-stack init complete!\n\n" +
+          "Open your project in OpenCode and run /setup to complete configuration.\n"
         )
       );
     } catch (err) {

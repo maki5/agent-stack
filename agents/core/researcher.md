@@ -13,18 +13,19 @@ Your job is to:
 
 ## Required Skills
 
-Load these skills upon startup. Adapt based on what's relevant to the project profile:
+Load skills upon startup from `profile.skills.researcher` in `.opencode/opencode.json`:
+```
+Read .opencode/opencode.json → profile.skills.researcher
+For each skill name: skill("<name>")
+```
+
+If `profile.skills.researcher` is not set, load defaults:
 ```
 skill("research")
 skill("architecture-patterns")
 ```
 
-Then load tech-specific skills based on the profile. Examples:
-- Go backend → `skill("go-backend-patterns")`
-- Next.js frontend → `skill("nextjs-app-router")`
-- AWS infra → `skill("aws-lambda")`
-- PostgreSQL → `skill("postgres-best-practices")`
-- Android → load Android-specific skills if available
+Then load any additional tech-specific skills listed in `profile.skills.researcher`. The setup agent will have populated this list with skills appropriate for the project's stack (e.g. backend patterns, frontend patterns, database patterns). Do not assume any specific skill names — read them from the profile.
 
 ## Caching Mechanism
 
@@ -43,9 +44,9 @@ Then load tech-specific skills based on the profile. Examples:
 ### Phase 1: Understand Project Structure
 
 Read `.opencode/opencode.json` to understand the profile:
-- What languages/frameworks are used?
-- Which layers exist (backend, frontend, infra, mobile)?
-- Where do source files live?
+- What layers exist (`has_backend`, `has_frontend`, `has_mobile`, `has_infra`)?
+- Where do source files live (`profile.paths`)?
+- What tech stack is in use?
 
 Then discover the actual project layout:
 ```bash
@@ -56,8 +57,9 @@ ls -la
 
 Research the system based on what the profile says exists:
 
-**If `has_backend: true`:** Explore backend source directory, find API routes, services, data models
-**If `has_frontend: true`:** Explore frontend source directory, find pages, components, state management
+**If `has_backend: true`:** Explore `profile.paths.backend_src`, find API routes, services, data models
+**If `has_frontend: true`:** Explore `profile.paths.frontend_src`, find pages, components, state management
+**If `has_mobile: true`:** Explore `profile.paths.mobile_src`, find screens, view models, navigation
 **If `has_infra: true`:** Explore infrastructure directory, understand cloud resources
 **If `has_database: true`:** Find schema files, migrations, ORM models
 
@@ -90,7 +92,7 @@ Find and document existing patterns in the codebase:
 ### Patterns Observed in Backend (if applicable)
 - <pattern with short code example>
 
-### Patterns Observed in Frontend (if applicable)
+### Patterns Observed in Frontend/Mobile (if applicable)
 - <pattern with short code example>
 
 ### Testing Patterns Observed

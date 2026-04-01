@@ -20,16 +20,25 @@ Your job is to:
 
 ## Workflow
 
-### Step 1: Load Review Skill
+### Step 1: Load Review Skills
 
+Load skills from `profile.skills.reviewer` in `.opencode/opencode.json`:
+```
+Read .opencode/opencode.json → profile.skills.reviewer
+For each skill name: skill("<name>")
+```
+
+If `profile.skills.reviewer` is not set, load defaults:
 ```
 skill("code-review")
 ```
 
 ### Step 2: Get Changed Files
 
+Read `profile.default_branch` from `.opencode/opencode.json`, then:
+
 ```bash
-git diff --name-only main...HEAD
+git diff --name-only <default_branch>...HEAD
 ```
 
 ### Pass 1: Standard Review
@@ -38,14 +47,14 @@ Check for:
 
 **Security:**
 - [ ] No hardcoded secrets or credentials
-- [ ] SQL queries use parameterized statements (`$1, $2, ...`)
+- [ ] Queries use parameterized statements (if database is used)
 - [ ] User input is validated
 - [ ] Auth checks are present on protected routes
 
 **Architecture:**
-- [ ] Project's layered architecture pattern followed (e.g. Handler → Service → Repository)
+- [ ] Project's architecture pattern followed (observed from the codebase)
 - [ ] Project's error handling conventions used
-- [ ] Project's HTTP response conventions used
+- [ ] Project's response conventions used
 - [ ] No circular dependencies
 
 **Code Quality:**
@@ -60,8 +69,8 @@ Check for:
 - [ ] Mocks are properly configured
 
 **API:**
-- [ ] API spec annotations present (if applicable, e.g. Swagger/OpenAPI)
-- [ ] Response shapes match frontend/consumer expectations
+- [ ] API spec annotations present (if applicable to the project)
+- [ ] Response shapes match consumer expectations
 
 ### Pass 2: Independent Review
 
@@ -93,15 +102,15 @@ Fresh perspective check:
 Identify potential risks that could cause issues in production:
 
 **Security Risks:**
-- [ ] SQL injection vulnerabilities
-- [ ] XSS vulnerabilities
-- [ ] CSRF vulnerabilities
+- [ ] Injection vulnerabilities (SQL, command, etc.)
+- [ ] XSS vulnerabilities (web)
+- [ ] CSRF vulnerabilities (web)
 - [ ] Authentication/authorization bypass
 - [ ] Data exposure risks
 - [ ] Secret leakage risks
 
 **Operational Risks:**
-- [ ] Database connection pool exhaustion
+- [ ] Connection pool exhaustion
 - [ ] Memory leaks
 - [ ] Unbounded data growth
 - [ ] Missing indexes on frequently queried fields
@@ -176,10 +185,10 @@ Ready to proceed: <yes/no>
 
 ## Rules
 
-1. Be thorough but fair - flag real issues, not nitpicks
+1. Be thorough but fair — flag real issues, not nitpicks
 2. Provide actionable fixes, not just complaints
-3. Different perspective each pass - don't repeat the same checks
-4. Use severity appropriately - P1 only for real blockers
+3. Different perspective each pass — don't repeat the same checks
+4. Use severity appropriately — P1 only for real blockers
 5. If issues found, they must be fixed before proceeding
-6. **Return all findings to the coordinator** — never delegate fixes directly. The coordinator (implementer or debugger) owns the fix loop: coder fixes → tester re-runs tests → coordinator re-delegates to reviewer to verify.
-7. Never delegate back to implementer for code fixes — go directly to coder
+6. **Return all findings to the coordinator** — never delegate fixes directly. The coordinator (implementer or debugger) owns the fix loop: developer agent fixes → tester re-runs tests → coordinator re-delegates to reviewer to verify.
+7. Always read `profile.default_branch` to get the correct base branch for `git diff`

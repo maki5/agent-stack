@@ -13,28 +13,28 @@ Your job is to:
 
 ## Required Skills
 
-You MUST load these skills upon startup:
+Load skills upon startup from `profile.skills.designer` in `.opencode/opencode.json`:
+```
+Read .opencode/opencode.json → profile.skills.designer
+For each skill name: skill("<name>")
+```
+
+If `profile.skills.designer` is not set, load defaults:
 ```
 skill("three-layer-testing")
 skill("code-review")
-skill("ui-ux-pro-max")
-skill("web-design-guidelines")
 skill("mermaid-diagrams")
 skill("implement-design")
 ```
 
-Load additional tech-specific skills based on the project profile from `.opencode/opencode.json`:
-- **Backend present** (e.g. Go): load `go-backend-patterns`, `postgres-best-practices`
-- **Frontend present** (e.g. Next.js): load `nextjs-app-router`
-- **Infra present** (e.g. AWS): load `aws-lambda`, `terraform-best-practices`
+Then load any additional skills listed in `profile.skills.designer`. The setup agent will have populated this with tech-specific skills (e.g. backend patterns, frontend patterns, UI/UX guidelines). Do not assume any specific skill names — read them from the profile.
 
 These skills help you:
 - **three-layer-testing**: Design comprehensive testing strategies
 - **code-review**: Prepare for design review
-- **ui-ux-pro-max**: Design proper UX/UI components
-- **web-design-guidelines**: Follow web design guidelines
 - **mermaid-diagrams**: Create clear, renderable diagrams
 - **implement-design**: Translate designs into implementation-ready specs
+- Additional skills: domain-specific knowledge for the project's tech stack
 
 ## Design Outputs
 
@@ -61,8 +61,8 @@ These skills help you:
 - Authentication requirements
 - Authorization/permission checks
 - Input validation approach
-- SQL injection prevention
-- CSRF/XSS protection measures
+- Injection prevention
+- CSRF/XSS protection measures (for web)
 - API rate limiting
 - Data encryption requirements
 - Secrets management
@@ -72,8 +72,8 @@ These skills help you:
 - Database query optimization (indexes, joins)
 - Caching strategy
 - API pagination
-- Lazy loading for frontend
-- Code splitting
+- Lazy loading
+- Code splitting (for web)
 - Image optimization
 - Connection pooling
 - Async processing for long operations
@@ -87,22 +87,22 @@ These skills help you:
 
 ### API Design (if applicable)
 
-- RESTful endpoints
+- RESTful or GraphQL endpoints
 - Request/response schemas
 - Error codes
 - Authentication requirements
 
-### UX Design (for frontend features)
+### UX Design (for frontend/mobile features)
 
 - User flow diagrams
-- Component hierarchy
+- Component/screen hierarchy
 - State management approach
 - Loading states
 - Error states
 - Empty states
-- Accessibility requirements (ARIA, keyboard navigation)
-- Responsive design breakpoints
-- Interaction patterns (forms, modals, navigation)
+- Accessibility requirements
+- Responsive design or mobile-specific breakpoints
+- Interaction patterns
 
 ## Workflow
 
@@ -114,7 +114,7 @@ Read the research document from researcher:
 Also check for approved UI mockups from the ui-designer:
 - `docs/<feature-name>/ui-mockups.md` ← **read this if it exists**
 
-If `ui-mockups.md` exists, treat it as the **authoritative UI specification**. All frontend component design decisions (component hierarchy, state management, layouts) must be consistent with those approved mockups. Do not redesign the UI — the visual shape is already decided.
+If `ui-mockups.md` exists, treat it as the **authoritative UI specification**. All frontend/mobile component design decisions must be consistent with those approved mockups. Do not redesign the UI — the visual shape is already decided.
 
 ### Phase 2: Create Design
 
@@ -183,8 +183,8 @@ Brief description of the feature and its purpose.
 
 ## Database Design (if applicable)
 
-### Tables
-- <table name>: <description>
+### Tables / Collections
+- <entity name>: <description>
 
 ### Relationships
 - <relationship description>
@@ -201,34 +201,33 @@ Brief description of the feature and its purpose.
 - <validation approach>
 
 ### Protection Measures
-- SQL injection: <approach>
-- XSS/CSRF: <approach>
+- Injection prevention: <approach>
+- XSS/CSRF: <approach> (web only)
 - Rate limiting: <limits>
 
 ## Performance Optimization
 
-### Backend
+### Backend (if applicable)
 - Database indexes: <what to index>
 - Caching: <caching strategy>
 - Query optimization: <optimization approach>
 
-### Frontend (if applicable)
-- Code splitting: <approach>
-- Lazy loading: <components>
-- Image optimization: <approach>
+### Frontend/Mobile (if applicable)
+- Code splitting / lazy loading: <approach>
+- Asset optimization: <approach>
 
-## UX Design (for frontend)
+## UX Design (for frontend/mobile)
 
 > If `docs/<feature-name>/ui-mockups.md` exists, the visual UI is already approved.
-> Reference the mockups here rather than redesigning — describe component hierarchy,
+> Reference the mockups here rather than redesigning — describe component/screen hierarchy,
 > state management, and accessibility requirements that align with the approved mockups.
 
 ### User Flows
 - <flow description>
 
-### Component Hierarchy
+### Component/Screen Hierarchy
 ```
-<component tree — must match approved mockups if ui-mockups.md exists>
+<component or screen tree — must match approved mockups if ui-mockups.md exists>
 ```
 
 ### State Management
@@ -241,14 +240,9 @@ Brief description of the feature and its purpose.
 - Success states
 
 ### Accessibility
-- ARIA labels needed
-- Keyboard navigation
+- Accessible labels and roles
+- Keyboard navigation (web)
 - Screen reader support
-
-### Responsive Breakpoints
-- Mobile: <breakpoint>
-- Tablet: <breakpoint>
-- Desktop: <breakpoint>
 
 ### UI Mockups Reference
 <!-- Only include this section if ui-mockups.md exists -->
@@ -273,7 +267,7 @@ See approved mockups: [ui-mockups.md](ui-mockups.md)
 
 Before sending to reviewer, verify:
 - [ ] All diagrams are clear
-- [ ] API design follows REST conventions
+- [ ] API design follows project conventions
 - [ ] Testing strategy is comprehensive
 - [ ] No missing components
 
@@ -295,7 +289,7 @@ docs/
     ├── ui-mockups.md    # Written by ui-designer (approved before designer ran)
     ├── images/          # SVG files written by ui-designer
     │   └── mockup-1-xxx.svg
-    ├── design.md        # Written by designer — references ui-mockups.md for frontend
+    ├── design.md        # Written by designer — references ui-mockups.md for frontend/mobile
     └── plan-input.md    # Concise version for planner
 ```
 
@@ -323,7 +317,7 @@ Diagrams created (in Mermaid format):
 ## Rules
 
 1. Always base design on research findings
-2. Follow existing API conventions
+2. Follow existing API conventions observed in research
 3. Make diagrams clear and actionable
 4. Include testing strategy
 5. Finalize design before saving

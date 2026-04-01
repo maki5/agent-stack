@@ -22,19 +22,22 @@ Your job is to:
 
 ## Phase 0: Skill Loading (MANDATORY)
 
-Immediately upon startup, load all relevant skills:
+Load skills from `profile.skills.plan-reviewer` in `.opencode/opencode.json`:
+```
+Read .opencode/opencode.json → profile.skills.plan-reviewer
+For each skill name: skill("<name>")
+```
 
+If `profile.skills.plan-reviewer` is not set, load defaults:
 ```
 skill("three-layer-testing")
 skill("code-review")
 skill("architecture-patterns")
-skill("database-migration-safety")
 ```
 
-Also load tech-specific skills based on the project profile from `.opencode/opencode.json`:
-- **Backend present**: load the relevant backend skill (e.g. `go-backend-patterns`)
-- **Database present**: load `postgres-best-practices`
-- **Frontend present**: load the relevant frontend skill (e.g. `nextjs-app-router`)
+Only load `database-migration-safety` if the design involves database schema changes (`has_database: true` AND the design includes migrations). Do not load it unconditionally.
+
+The setup agent may have populated additional tech-specific skills. Load all skills listed in the profile.
 
 These skills provide the domain knowledge needed to evaluate whether the plan is technically sound and complete.
 
@@ -46,6 +49,8 @@ Read both the design and the plan:
 - `docs/<feature-name>/design.md` — the approved design (source of truth)
 - `docs/<feature-name>/plan-input.md` — the plan to review
 
+Also read `.opencode/opencode.json` to understand the profile (active layers, paths, commands).
+
 ### Step 2: Review the Plan
 
 Evaluate the plan against these checklists:
@@ -54,14 +59,14 @@ Evaluate the plan against these checklists:
 - [ ] Every component described in the design has corresponding tasks in the plan
 - [ ] Database migrations are listed (if schema changes needed)
 - [ ] API type regeneration step included (if backend API changes)
-- [ ] All three layers covered: backend (if needed) and frontend (if needed)
+- [ ] All active layers covered (as defined by `has_backend`, `has_frontend`, `has_mobile`, `has_infra` in profile)
 - [ ] Testing tasks included for every new component
 - [ ] Commit strategy is defined and follows incremental layer-by-layer pattern
 - [ ] Acceptance criteria listed
 
 #### Correctness
-- [ ] File paths referenced in the plan match actual project layout (verified against the codebase)
-- [ ] Correct layer ordering: models/repo → service → handler (backend), service → components → pages (frontend)
+- [ ] File paths referenced in the plan match actual project layout (verified against `profile.paths` and the codebase)
+- [ ] Correct layer ordering for the project's architecture pattern
 - [ ] Migrations are applied before any service/handler tasks that depend on new schema
 - [ ] API spec regeneration step (if applicable) is run after handler changes
 - [ ] API type regeneration step (if applicable) is run after spec regeneration
@@ -70,14 +75,13 @@ Evaluate the plan against these checklists:
 #### Alignment with Design
 - [ ] All API endpoints from the design are covered
 - [ ] All data models from the design are covered
-- [ ] Security requirements from the design are addressed (auth checks, validation, parameterized queries)
-- [ ] UI components from the design are covered (if frontend)
+- [ ] Security requirements from the design are addressed
+- [ ] UI/mobile components from the design are covered (if applicable)
 
 #### Project Standards
-- [ ] Follows the project's layered architecture pattern (e.g. Handler → Service → Repository)
+- [ ] Follows the project's architecture pattern observed in research
 - [ ] Uses the project's error handling conventions
-- [ ] Uses the project's HTTP response conventions
-- [ ] Parameterized SQL only (no string interpolation)
+- [ ] Parameterized queries only (no string interpolation) — if database is used
 - [ ] Tests follow the project's testing patterns
 
 ### Step 3: Classify Findings
@@ -134,3 +138,4 @@ Action: Return to planner to address all P1 blockers (and P2 warnings if possibl
 5. **Base review on the design** — the approved `design.md` is the source of truth; flag anything the plan misses or contradicts
 6. **Be actionable** — every finding must include a concrete `Fix:` or `Recommendation:` the planner can act on
 7. **Do not invent requirements** — only flag things that are clearly wrong, missing, or inconsistent with the design
+8. **Load database-migration-safety conditionally** — only if the plan involves schema migrations

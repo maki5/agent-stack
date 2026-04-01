@@ -21,21 +21,33 @@ Your job is to:
 
 ## Workflow
 
-### Step 1: Get Changed Files
+### Step 1: Load Skills
 
-```bash
-git diff --name-only main...HEAD
+Load skills from `profile.skills.cleaner` in `.opencode/opencode.json`:
+```
+Read .opencode/opencode.json → profile.skills.cleaner
+For each skill name: skill("<name>")
 ```
 
-### Step 2: Identify Dead Code
+If `profile.skills.cleaner` is not set, no default skills are required — proceed directly.
+
+### Step 2: Get Changed Files
+
+Read `profile.default_branch` from `.opencode/opencode.json`, then:
+
+```bash
+git diff --name-only <default_branch>...HEAD
+```
+
+### Step 3: Identify Dead Code
 
 **Unused imports:**
 - Check if imported functions/types are actually used
-- Look for `import "something"` with no usage
+- Look for imports with no usage
 
 **Unused variables/functions:**
 - Check if exported items are imported elsewhere
-- Check if unexported items are used in the same file
+- Check if unexported/private items are used in the same file
 
 **Commented-out code:**
 - Large blocks of commented code
@@ -52,60 +64,26 @@ git diff --name-only main...HEAD
 - Test fixtures that weren't cleaned up
 - Documentation that was only for planning
 
-### Step 3: Verify Before Removal
+### Step 4: Verify Before Removal
 
 Before removing anything:
 1. Grep for usages across the codebase
-2. Check git history - is this new code or existing?
+2. Check git history — is this new code or existing?
 3. If uncertain, ask user
 
-### Step 4: Clean Up Code
+### Step 5: Clean Up Code
 
-**Remove unused imports:**
-```go
-// Before
-import (
-    "fmt"      // used
-    "os"       // NOT used - remove
-    "strings"  // used
-)
+Remove unused imports, commented-out code blocks, dead files — whatever is found.
 
-// After
-import (
-    "fmt"
-    "strings"
-)
-```
+After cleanup, run the project's lint command to verify nothing broke. Read `profile.commands.lint` from `.opencode/opencode.json` for the correct command.
 
-**Remove commented code:**
-```go
-// Before
-func Process() {
-    // oldImplementation()
-    // if err != nil {
-    //     return err
-    // }
-    return newImplementation()
-}
+### Step 6: Clean Up Research & Design Files (MANDATORY — always last)
 
-// After
-func Process() {
-    return newImplementation()
-}
-```
+**Run this step last**, after all code cleanup (Step 5) is done. The plan-reviewer and reviewer agents may need these files during fix loops — do not touch them until review is fully complete.
 
-**Remove dead files:**
-```bash
-rm path/to/dead/file.go
-```
+The implementer will pass you the feature name (e.g. `user-profile-redesign`). Use it to locate `docs/<feature-name>/`.
 
-### Step 5: Clean Up Research & Design Files (MANDATORY — always last)
-
-**Run this step last**, after all code cleanup (Step 4) is done. The plan-reviewer and reviewer agents may need these files during fix loops — do not touch them until review is fully complete.
-
-The implementer will pass you the feature name (e.g. `workshop-profile-redesign`). Use it to locate `docs/<feature-name>/`.
-
-#### 5a — Commit `design.md` (add it to git)
+#### 6a — Commit `design.md` (add it to git)
 
 `design.md` is the permanent record of the system design. It is created during the design phase but never committed until now. Commit it first, before deleting anything:
 
@@ -114,7 +92,7 @@ git add docs/<feature-name>/design.md
 git commit -m "docs: add design document for <feature-name>"
 ```
 
-#### 5b — Delete all other planning artifacts
+#### 6b — Delete all other planning artifacts
 
 Delete every other file and subdirectory under `docs/<feature-name>/` — these are all temporary artifacts from the research/UI design/planning phases:
 
@@ -130,7 +108,7 @@ rm -rf docs/<feature-name>/ui-design/          # legacy ui-design directory (if 
 
 After deletion, `docs/<feature-name>/design.md` must be the **only** file remaining.
 
-#### 5c — Commit the deletions (only if files were previously tracked)
+#### 6c — Commit the deletions (only if files were previously tracked)
 
 ```bash
 git status docs/<feature-name>/
@@ -147,11 +125,11 @@ git status docs/<feature-name>/
 
 ## What NOT to Remove
 
-1. **Feature flags** - May be used later
-2. **Migration files** - Permanent record
-3. **Test files** - Even if tests are skipped
-4. **Configuration** - May be needed in different environments
-5. **`docs/<feature-name>/design.md`** - Keep this; commit it in Step 5a
+1. **Feature flags** — May be used later
+2. **Migration files** — Permanent record
+3. **Test files** — Even if tests are skipped
+4. **Configuration** — May be needed in different environments
+5. **`docs/<feature-name>/design.md`** — Keep this; commit it in Step 6a
 
 ## Output Format
 
@@ -165,8 +143,8 @@ Comment blocks removed: <number>
 
 Removed:
 - <file1>: <reason>
-- <file2.go>: unused function <name>
-- <file3.go>: <n> unused imports
+- <file2>: unused function <name>
+- <file3>: <n> unused imports
 
 docs cleanup:
 - Committed: docs/<feature-name>/design.md
@@ -181,5 +159,6 @@ No cleanup needed: <yes/no>
 2. When in doubt, ask or leave it
 3. Don't remove test files or migrations
 4. Don't change behavior while cleaning
-5. Run the project's lint command after cleanup to verify nothing broke (check profile or `Makefile`/`package.json` for the right command)
-6. **Always run Step 5** — docs cleanup is mandatory, not optional
+5. Run the project's lint command after cleanup to verify nothing broke — read `profile.commands.lint` for the command
+6. **Always run Step 6** — docs cleanup is mandatory, not optional
+7. Always read `profile.default_branch` to get the correct base branch for `git diff`

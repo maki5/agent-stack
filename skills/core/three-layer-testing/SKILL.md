@@ -1,11 +1,8 @@
 ---
 name: three-layer-testing
-description: Testing patterns for all three layers - Go backend, React frontend, and Playwright E2E
+description: Universal testing patterns for any tech stack — unit, integration, and E2E tests
 tags:
   - testing
-  - go
-  - jest
-  - playwright
   - quality
 license: MIT
 compatibility: opencode
@@ -18,7 +15,7 @@ metadata:
 
 ## What I Do
 
-I help you write comprehensive tests across all three layers: Go backend unit tests, React frontend tests, and Playwright E2E tests. Every test must include success, error, and edge cases — happy-path-only is unacceptable.
+I help you write comprehensive tests across all layers of any project: unit/integration tests for backend/mobile logic, component tests for frontend/mobile UI, and end-to-end tests for full user journeys. Every test must include success, error, and edge cases — happy-path-only is unacceptable.
 
 ## When to Use Me
 
@@ -37,618 +34,154 @@ Use this skill when:
 
 | Layer | Minimum Test Cases | Required Cases |
 |-------|-------------------|----------------|
-| Go Handler | 4+ | Success + Validation + Not Found + Error |
-| Go Service | 4+ | Success + Validation + Database Error + Business Rule |
-| React Component | 5+ | Render + Interaction + Success API + Error API + Edge |
+| Backend unit (handler/controller) | 4+ | Success + Validation + Not Found + Auth Error |
+| Backend unit (service) | 4+ | Success + Validation + Data Error + Business Rule |
+| Frontend/mobile component | 4+ | Render + Interaction + Error State + Edge |
 | E2E Flow | 2+ | Success Journey + Error/Edge Journey |
 
-## Layer 1: Backend Testing (Go)
+## How to Read Existing Test Patterns
 
-### Test File Location
-
-```
-backend/internal/
-├── handlers/
-│   ├── rating_handler.go
-│   └── rating_handler_test.go     # Same package
-├── services/
-│   ├── rating_service.go
-│   └── rating_service_test.go
-└── repository/
-    ├── rating_repository.go
-    └── rating_repository_test.go
-```
-
-### Table-Driven Test Pattern
-
-```go
-func TestRatingHandler_Create(t *testing.T) {
-    tests := []struct {
-        name       string
-        input      string
-        userID     int
-        setupMocks func(*mocks.MockRatingService)
-        wantStatus int
-        wantBody   string
-    }{
-        {
-            name:   "success - valid rating",
-            input:  `{"workshop_id": 1, "score": 5, "comment": "Great service"}`,
-            userID: 123,
-            setupMocks: func(m *mocks.MockRatingService) {
-                m.On("Create", mock.Anything, 123, mock.AnythingOfType("*models.CreateRatingInput")).
-                    Return(&models.Rating{
-                        ID: 1, WorkshopID: 1, UserID: 123, Score: 5, Comment: "Great service",
-                    }, nil)
-            },
-            wantStatus: http.StatusCreated,
-            wantBody:   `"score":5`,
-        },
-        {
-            name:       "validation error - missing score",
-            input:      `{"workshop_id": 1}`,
-            userID:     123,
-            setupMocks: func(m *mocks.MockRatingService) {},
-            wantStatus: http.StatusBadRequest,
-            wantBody:   `"error"`,
-        },
-        {
-            name:       "validation error - score out of range",
-            input:      `{"workshop_id": 1, "score": 10}`,
-            userID:     123,
-            setupMocks: func(m *mocks.MockRatingService) {},
-            wantStatus: http.StatusBadRequest,
-        },
-        {
-            name:   "workshop not found",
-            input:  `{"workshop_id": 999, "score": 5}`,
-            userID: 123,
-            setupMocks: func(m *mocks.MockRatingService) {
-                m.On("Create", mock.Anything, 123, mock.AnythingOfType("*models.CreateRatingInput")).
-                    Return(nil, apperrors.NotFound("workshop not found"))
-            },
-            wantStatus: http.StatusNotFound,
-        },
-        {
-            name:   "unauthorized - no user context",
-            input:  `{"workshop_id": 1, "score": 5}`,
-            userID: 0, // No user in context
-            setupMocks: func(m *mocks.MockRatingService) {},
-            wantStatus: http.StatusUnauthorized,
-        },
-    }
-    
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            // Arrange
-            mockService := mocks.NewMockRatingService(t)
-            tt.setupMocks(mockService)
-            handler := NewRatingHandler(mockService)
-            
-            req := httptest.NewRequest(http.MethodPost, "/ratings", 
-                bytes.NewBufferString(tt.input))
-            req.Header.Set("Content-Type", "application/json")
-            
-            // Add user to context if needed
-            if tt.userID > 0 {
-                ctx := context.WithValue(req.Context(), middleware.UserIDKey, tt.userID)
-                req = req.WithContext(ctx)
-            }
-            
-            rr := httptest.NewRecorder()
-            
-            // Act
-            handler.Create(rr, req)
-            
-            // Assert
-            assert.Equal(t, tt.wantStatus, rr.Code)
-            if tt.wantBody != "" {
-                assert.Contains(t, rr.Body.String(), tt.wantBody)
-            }
-            mockService.AssertExpectations(t)
-        })
-    }
-}
-```
-
-### Mock Setup with Mockery
+**Before writing any tests**, examine the project's existing test files to understand:
+1. Which test framework is in use (e.g. Go's `testing`, Jest, Vitest, JUnit, XCTest, etc.)
+2. How mocks/stubs are set up
+3. What file naming and directory conventions are followed
+4. What selector attributes are used in UI tests (`data-testid`, `testID`, accessibility IDs, etc.)
 
 ```bash
-# Generate mocks
-make generate-mocks
-
-# Use in tests
-mockService := mocks.NewMockRatingService(t)
-mockService.On("Create", mock.Anything, userID, mock.Anything).
-    Return(&models.Rating{ID: 1}, nil)
+# Find existing test files
+# Look for patterns like *_test.go, *.test.ts, *Spec.swift, *Test.kt, test_*.py, etc.
 ```
 
-### Service Test Pattern
+## Layer 1: Logic/Unit Tests (Backend / Business Logic)
 
-```go
-func TestRatingService_Create(t *testing.T) {
-    tests := []struct {
-        name    string
-        userID  int
-        input   *models.CreateRatingInput
-        mockSetup func(*mocks.MockRatingRepository)
-        wantErr error
-    }{
-        {
-            name:   "success",
-            userID: 123,
-            input:  &models.CreateRatingInput{WorkshopID: 1, Score: 5},
-            mockSetup: func(m *mocks.MockRatingRepository) {
-                m.On("Create", mock.Anything, mock.AnythingOfType("*models.Rating")).
-                    Return(nil)
-            },
-            wantErr: nil,
-        },
-        {
-            name:   "database error",
-            userID: 123,
-            input:  &models.CreateRatingInput{WorkshopID: 1, Score: 5},
-            mockSetup: func(m *mocks.MockRatingRepository) {
-                m.On("Create", mock.Anything, mock.Anything).
-                    Return(errors.New("connection refused"))
-            },
-            wantErr: apperrors.DatabaseError(errors.New("connection refused"), "create rating"),
-        },
-    }
-    // ... test implementation
-}
+### Test Structure Pattern
+
+Structure tests with clear Arrange / Act / Assert sections and multiple cases:
+
+```
+Test: <ComponentName>.<MethodName>
+
+Cases:
+- success: valid input returns expected output
+- validation error: invalid input is rejected with appropriate error
+- not found: missing resource returns appropriate "not found" error
+- unauthorized: unauthenticated/unauthorized request is rejected (if auth required)
+- edge case: boundary/empty input handled correctly
 ```
 
-### Test Commands
+### Key Principles
+
+- **Isolate dependencies** with mocks/stubs — unit tests must not hit real databases or external services
+- **Table-driven or parameterized** patterns are preferred for covering multiple cases cleanly
+- **Assert both the happy path and the failure modes** — test what the function returns on error, not just on success
+- **Mock setup must match the expected inputs** — loose mocks that match any input hide bugs
+
+### What to Test per Component Type
+
+| Component | What to test |
+|-----------|-------------|
+| Handler/Controller | HTTP status codes, response body shape, auth enforcement |
+| Service/Use Case | Business rule enforcement, error propagation, edge cases |
+| Repository/Data Access | Query correctness, error mapping, transaction handling |
+| Utility/Helper | Pure function correctness, boundary inputs |
+
+## Layer 2: Component/UI Tests (Frontend / Mobile)
+
+### Test Structure Pattern
+
+```
+Test: <ComponentName>
+
+Cases:
+- renders correctly with valid data
+- renders loading state when data is loading
+- renders error state when data fetch fails
+- renders empty state when list is empty
+- handles user interaction correctly (clicks, inputs, gestures)
+```
+
+### Key Principles
+
+- **Use the project's established selector attributes** — read existing test files first to learn which attributes are used (`data-testid` for web React, `testID` for React Native, accessibility identifiers for native iOS/Android, etc.)
+- **Mock API/service calls** — component tests must not hit real services
+- **Test every distinct state** — loading, error, empty, populated
+- **Test user interactions** — simulate clicks, form submissions, gestures as appropriate
+
+### Selector Attribute Conventions (by platform)
+
+| Platform | Attribute | Example |
+|----------|-----------|---------|
+| React (web) | `data-testid` | `data-testid="submit-btn"` |
+| React Native | `testID` | `testID="submit-btn"` |
+| Native Android | content description or tag | `contentDescription="submit"` |
+| Native iOS (XCTest) | `accessibilityIdentifier` | `.accessibilityIdentifier("submit")` |
+
+Always use the convention already established in the project — check existing test files.
+
+## Layer 3: End-to-End Tests
+
+### Test Structure Pattern
+
+```
+Test: <Feature> — <Scenario>
+
+Cases:
+- success journey: user completes the full happy-path flow
+- error journey: user encounters an expected error and sees correct feedback
+- edge case: boundary condition or unusual but valid flow
+```
+
+### Key Principles
+
+- **Test complete user journeys** — not isolated actions
+- **Use the project's E2E framework** — read `profile.commands.e2e` and check the project's E2E directory for patterns
+- **Seed/reset test data** appropriately before each test
+- **Do not hardcode wait times** — use the framework's built-in waiting mechanisms
+- **Test both success and error paths**
+
+### What NOT to do in E2E tests
+
+- Do not test implementation details — test what the user sees and can do
+- Do not share state between parallel tests
+- Do not use brittle CSS class selectors (prefer the project's established test selectors)
+
+## Running Tests
+
+Always read `profile.commands` from `.opencode/opencode.json` for the correct commands:
 
 ```bash
-# Run all backend tests
-make test-backend
+# Unit/integration tests
+<profile.commands.test>
 
-# Run with coverage
-make test-coverage
-
-# Run specific test
-make test-backend -- -run TestRatingHandler_Create
-
-# Run with verbose output
-cd backend && go test -v ./...
+# E2E tests (if profile.commands.e2e is set)
+<profile.commands.e2e>
 ```
 
-## Layer 2: Frontend Testing (Jest + React Testing Library)
+Do not guess or assume command names — always read them from the profile.
 
-### Test File Location
+## Test Data Management
 
-```
-web-frontend/
-├── components/
-│   ├── RatingCard.tsx
-│   └── __tests__/
-│       └── RatingCard.test.tsx   # Mirror structure
-├── app/
-│   └── workshop/
-│       └── __tests__/
-│           └── page.test.tsx
-└── __tests__/                     # Or flat structure
-    └── components/
-        └── RatingCard.test.tsx
-```
-
-### Component Test Pattern
-
-```typescript
-// components/__tests__/RatingCard.test.tsx
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { RatingCard } from '../RatingCard';
-import * as api from '../../services/api';
-
-// Mock the API module
-jest.mock('../../services/api');
-
-describe('RatingCard', () => {
-    const mockRating = {
-        id: 1,
-        score: 5,
-        comment: 'Great service!',
-        userName: 'John Doe',
-        createdAt: '2024-01-15T10:00:00Z',
-    };
-
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('renders rating information correctly', () => {
-        // Success: Component displays data
-        render(<RatingCard rating={mockRating} />);
-        
-        expect(screen.getByText('Great service!')).toBeInTheDocument();
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
-        expect(screen.getByText('★★★★★')).toBeInTheDocument(); // 5 stars
-    });
-
-    it('renders without comment', () => {
-        // Edge: Missing optional data
-        const ratingWithoutComment = { ...mockRating, comment: '' };
-        render(<RatingCard rating={ratingWithoutComment} />);
-        
-        expect(screen.queryByTestId('comment')).not.toBeInTheDocument();
-    });
-
-    it('handles user interaction - hover effect', async () => {
-        // Interaction: User hovers over card
-        render(<RatingCard rating={mockRating} />);
-        
-        const card = screen.getByTestId('rating-card');
-        await userEvent.hover(card);
-        
-        expect(card).toHaveClass('hover:shadow-lg');
-    });
-
-    it('renders loading state', () => {
-        // Edge: Loading state
-        render(<RatingCard rating={null} isLoading={true} />);
-        
-        expect(screen.getByTestId('rating-skeleton')).toBeInTheDocument();
-    });
-
-    it('renders error state', () => {
-        // Error: Failed to load
-        render(<RatingCard rating={null} error="Failed to load rating" />);
-        
-        expect(screen.getByText('Failed to load rating')).toBeInTheDocument();
-    });
-
-    it('calls onDelete when delete button clicked', async () => {
-        // Interaction: User action
-        const onDelete = jest.fn();
-        render(<RatingCard rating={mockRating} onDelete={onDelete} />);
-        
-        const deleteBtn = screen.getByTestId('delete-rating-btn');
-        await userEvent.click(deleteBtn);
-        
-        expect(onDelete).toHaveBeenCalledWith(1);
-    });
-});
-```
-
-### Page/Integration Test Pattern
-
-```typescript
-// app/workshop/__tests__/page.test.tsx
-import { render, screen, waitFor } from '@testing-library/react';
-import WorkshopPage from '../page';
-import * as workshopService from '../../../services/workshopService';
-
-jest.mock('../../../services/workshopService');
-
-describe('WorkshopPage', () => {
-    it('displays workshop details on successful load', async () => {
-        // Success: API returns data
-        const mockWorkshop = {
-            id: 1,
-            name: 'Best Auto Shop',
-            rating: 4.5,
-        };
-        (workshopService.getWorkshop as jest.Mock).mockResolvedValue({
-            data: mockWorkshop,
-        });
-
-        render(<WorkshopPage params={{ id: '1' }} />);
-
-        await waitFor(() => {
-            expect(screen.getByText('Best Auto Shop')).toBeInTheDocument();
-        });
-    });
-
-    it('displays error message on API failure', async () => {
-        // Error: API fails
-        (workshopService.getWorkshop as jest.Mock).mockRejectedValue({
-            message: 'Workshop not found',
-        });
-
-        render(<WorkshopPage params={{ id: '999' }} />);
-
-        await waitFor(() => {
-            expect(screen.getByText(/error/i)).toBeInTheDocument();
-        });
-    });
-
-    it('displays loading state initially', () => {
-        // Loading state
-        (workshopService.getWorkshop as jest.Mock).mockImplementation(
-            () => new Promise(() => {}) // Never resolves
-        );
-
-        render(<WorkshopPage params={{ id: '1' }} />);
-
-        expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
-    });
-});
-```
-
-### Test Utilities
-
-```typescript
-// __tests__/utils/test-utils.tsx
-import { render as rtlRender } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-// Mock query client for tests
-const createTestQueryClient = () =>
-    new QueryClient({
-        defaultOptions: {
-            queries: { retry: false },
-        },
-    });
-
-export function render(ui: React.ReactElement, options = {}) {
-    const testQueryClient = createTestQueryClient();
-    
-    return rtlRender(
-        <QueryClientProvider client={testQueryClient}>
-            {ui}
-        </QueryClientProvider>,
-        options
-    );
-}
-```
-
-### Test Commands
-
-```bash
-# Run all frontend tests
-make frontend-test
-
-# Run in watch mode
-npm run test:watch
-
-# Run with coverage
-npm run test:coverage
-
-# Run specific test file
-npm test -- RatingCard.test.tsx
-```
-
-## Layer 3: E2E Testing (Playwright)
-
-### Test File Location
-
-```
-web-frontend/e2e/
-├── booking-flow.spec.ts           # Feature-based
-├── auth/
-│   ├── login.spec.ts
-│   └── registration.spec.ts
-├── helpers/
-│   ├── test-data.ts              # Test data factories
-│   └── workflow.helpers.ts       # Reusable workflows
-└── fixtures/
-    └── users.json                # Test user data
-```
-
-### E2E Test Pattern
-
-```typescript
-// e2e/booking-flow.spec.ts
-import { test, expect } from '@playwright/test';
-import { createTestWorkshop, createTestUser } from './helpers/test-data';
-
-test.describe('Booking Flow', () => {
-    test.beforeEach(async ({ page }) => {
-        // Setup: Seed test data
-        await page.goto('/');
-    });
-
-    test('user can create and complete a booking', async ({ page }) => {
-        // Success Journey: Complete booking flow
-        
-        // 1. Login
-        await page.goto('/login');
-        await page.fill('[data-testid="email-input"]', 'user1@test.com');
-        await page.fill('[data-testid="password-input"]', 'Bf109g6a/s');
-        await page.click('[data-testid="login-button"]');
-        
-        await expect(page).toHaveURL('/dashboard');
-        
-        // 2. Create service request
-        await page.click('[data-testid="new-request-btn"]');
-        await page.selectOption('[data-testid="vehicle-select"]', '1');
-        await page.fill('[data-testid="description-input"]', 'Engine noise');
-        await page.click('[data-testid="submit-request-btn"]');
-        
-        await expect(page.locator('[data-testid="success-message"]')).
-            toContainText('Request created');
-        
-        // 3. View request details
-        const requestId = await page.locator('[data-testid="request-id"]').textContent();
-        await page.goto(`/requests/${requestId}`);
-        
-        await expect(page.locator('[data-testid="request-status"]')).
-            toContainText('pending');
-    });
-
-    test('shows error when submitting invalid request', async ({ page }) => {
-        // Error Journey: Validation errors
-        
-        await page.goto('/login');
-        await page.fill('[data-testid="email-input"]', 'user1@test.com');
-        await page.fill('[data-testid="password-input"]', 'Bf109g6a/s');
-        await page.click('[data-testid="login-button"]');
-        
-        // Try to submit without required fields
-        await page.click('[data-testid="new-request-btn"]');
-        await page.click('[data-testid="submit-request-btn"]');
-        
-        await expect(page.locator('[data-testid="vehicle-error"]')).
-            toContainText('Vehicle is required');
-        await expect(page.locator('[data-testid="description-error"]')).
-            toContainText('Description is required');
-    });
-
-    test('handles concurrent booking attempts', async ({ browser }) => {
-        // Edge Case: Concurrent operations
-        
-        const user1Context = await browser.newContext();
-        const user2Context = await browser.newContext();
-        
-        const page1 = await user1Context.newPage();
-        const page2 = await user2Context.newPage();
-        
-        // Both users try to book same slot
-        // ... implementation
-    });
-});
-```
-
-### Serial Test Pattern (Lifecycle Tests)
-
-```typescript
-// e2e/workshop-lifecycle.spec.ts
-import { test, expect } from '@playwright/test';
-
-test.describe.configure({ mode: 'serial' });
-
-test.describe('Workshop Lifecycle', () => {
-    let workshopId: string;
-
-    test('create workshop', async ({ page }) => {
-        // Step 1: Create
-        await page.goto('/workshops/new');
-        await page.fill('[data-testid="name-input"]', 'Test Auto Shop');
-        await page.fill('[data-testid="address-input"]', '123 Main St');
-        await page.click('[data-testid="submit-btn"]');
-        
-        workshopId = await page.locator('[data-testid="workshop-id"]').textContent();
-        await expect(page).toHaveURL(`/workshops/${workshopId}`);
-    });
-
-    test('update workshop', async ({ page }) => {
-        // Step 2: Update (depends on create)
-        await page.goto(`/workshops/${workshopId}/edit`);
-        await page.fill('[data-testid="name-input"]', 'Updated Auto Shop');
-        await page.click('[data-testid="save-btn"]');
-        
-        await expect(page.locator('[data-testid="workshop-name"]')).
-            toContainText('Updated Auto Shop');
-    });
-
-    test('delete workshop', async ({ page }) => {
-        // Step 3: Delete (depends on create)
-        await page.goto(`/workshops/${workshopId}`);
-        await page.click('[data-testid="delete-btn"]');
-        await page.click('[data-testid="confirm-delete-btn"]');
-        
-        await expect(page).toHaveURL('/workshops');
-        await expect(page.locator(`[data-testid="workshop-${workshopId}"]`)).
-            not.toBeVisible();
-    });
-});
-```
-
-### Test Helpers
-
-```typescript
-// e2e/helpers/test-data.ts
-export const TEST_CREDENTIALS = {
-    user: {
-        email: 'user1@test.com',
-        password: 'Bf109g6a/s',
-    },
-    workshop: {
-        email: 'testws@test.com',
-        password: 'Test123!',
-    },
-};
-
-export async function loginAsUser(page: Page) {
-    await page.goto('/login');
-    await page.fill('[data-testid="email-input"]', TEST_CREDENTIALS.user.email);
-    await page.fill('[data-testid="password-input"]', TEST_CREDENTIALS.user.password);
-    await page.click('[data-testid="login-button"]');
-    await page.waitForURL('/dashboard');
-}
-
-export async function createTestWorkshop(page: Page, name: string) {
-    await page.goto('/workshops/new');
-    await page.fill('[data-testid="name-input"]', name);
-    // ... fill other fields
-    await page.click('[data-testid="submit-btn"]');
-    return page.locator('[data-testid="workshop-id"]').textContent();
-}
-```
-
-### Test Commands
-
-```bash
-# Run all E2E tests
-make e2e
-
-# Run in headed mode (visible browser)
-make e2e-headed
-
-# Open Playwright UI
-make e2e-ui
-
-# Run smoke tests only
-make e2e-smoke
-
-# View test report
-make e2e-report
-
-# Seed test data
-make e2e-seed
-```
-
-### E2E Best Practices
-
-✅ **DO:**
-- Use `data-testid` attributes for selectors
-- Test complete user journeys
-- Clean up test data after tests
-- Use helper functions for common operations
-- Test both success and error paths
-
-❌ **DON'T:**
-- Use CSS class selectors (brittle)
-- Hardcode wait times (use `waitFor` instead)
-- Test implementation details
-- Share state between parallel tests
-
-## Smoke Checks (CI/CD)
-
-After deployment, run smoke checks:
-
-```bash
-# CI runs these automatically
-bash scripts/smoke/run.sh
-
-# Manual smoke check
-curl -sf http://localhost:3000/health
-curl -sf http://localhost:3001/api/v1/health
-```
-
-**Update endpoint list when adding public GET endpoints:**
-`scripts/smoke/get_endpoints.json`
+- Use **factories or builders** for test data to avoid copy-paste fixtures
+- Clean up test data after tests that create persistent state
+- Never use real production data in tests
 
 ## Quick Reference
 
-```bash
-# Backend
-make test-backend                    # Run Go tests
-cd backend && go test -v ./...       # Verbose
+```
+Before writing tests:
+1. Read profile.commands for test commands
+2. Find 2-3 existing test files and study patterns
+3. Note the mock/stub framework in use
+4. Note the selector convention for UI tests
 
-# Frontend
-make frontend-test                   # Run Jest tests
-npm test -- --watch                  # Watch mode
+When writing tests:
+1. Arrange: set up mocks, inputs, expected outputs
+2. Act: call the function or render the component
+3. Assert: check result, errors, side effects
 
-# E2E
-make e2e                             # Run Playwright
-make e2e-headed                      # Visible browser
-make dev-suite && make e2e           # Full local run
-
-# All layers
-make test                            # Backend + Frontend unit tests
-make validate-full                   # All tests + E2E
+Required cases (minimum):
+- 1 success case
+- 1 validation/input error case
+- 1 "not found" or empty case
+- 1 edge case (null, empty list, boundary value, etc.)
 ```

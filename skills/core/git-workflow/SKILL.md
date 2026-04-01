@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: Git branching conventions, commit message formats, and release management for SmartGarage
+description: Universal git branching conventions, commit message formats, and PR workflow for any project
 license: MIT
 compatibility: opencode
 metadata:
@@ -12,12 +12,12 @@ metadata:
 
 ## What I Do
 
-I help you follow SmartGarage's git conventions:
+I help you follow git conventions consistently across any project:
 
 - Create properly named branches
 - Write conventional commit messages
-- Prepare releases with changelogs
 - Navigate PR workflows
+- Prepare releases with changelogs
 
 ## When to Use Me
 
@@ -25,8 +25,8 @@ Use this skill when:
 
 - Starting a new feature/fix
 - Writing commit messages
+- Creating pull requests
 - Preparing a release
-- Setting up a new repository
 
 ## Branch Naming
 
@@ -34,21 +34,23 @@ Use this skill when:
 
 | Type        | Pattern                        | Example                      |
 | ----------- | ------------------------------ | ---------------------------- |
-| Feature     | `feature/<short-description>`  | `feature/ratings-reviews`    |
-| Bugfix      | `fix/<short-description>`      | `fix/offer-payload-mismatch` |
+| Feature     | `feature/<short-description>`  | `feature/user-ratings`       |
+| Bugfix      | `fix/<short-description>`      | `fix/date-validation`        |
 | Refactor    | `refactor/<short-description>` | `refactor/consolidate-types` |
 | Chore/Infra | `chore/<short-description>`    | `chore/update-dependencies`  |
+| Hotfix      | `hotfix/<short-description>`   | `hotfix/auth-bypass`         |
 
 ### Creating a Branch
 
 ```bash
-# 1. Start from dev (not main)
-git checkout dev && git pull origin dev
+# 1. Read profile.default_branch from .opencode/opencode.json
+# 2. Start from the default branch
+git checkout <default_branch> && git pull origin <default_branch>
 
-# 2. Create branch with proper naming
+# 3. Create branch with proper naming
 git checkout -b feature/<short-description>
 
-# 3. Push to origin
+# 4. Push to origin
 git push -u origin feature/<short-description>
 ```
 
@@ -69,92 +71,50 @@ git push -u origin feature/<short-description>
 - **feat**: New feature
 - **fix**: Bug fix
 - **refactor**: Code restructuring (no behavior change)
-- **chore**: Maintenance tasks (deps, config)
+- **chore**: Maintenance tasks (deps, config) — no scope: `chore: <subject>`
 - **test**: Adding/updating tests
 - **docs**: Documentation changes
 
 ### Scopes
 
-> **CRITICAL: Only these scopes are accepted by CI. Any other scope will fail the PR title check.**
+Use the project's actual layer names as scopes. Read the project's commit history to identify the conventions in use. Common examples:
 
 | Scope | Use for |
 |-------|---------|
-| `backend` | Go backend code |
-| `frontend` | Next.js/React code |
+| `backend` | Server-side / API code |
+| `frontend` | Web client code |
+| `mobile` | Mobile app code |
 | `api` | API contracts/endpoints |
 | `db` | Database/migrations |
-| `ci` | CI/CD pipeline configs, GitHub Actions workflows, PR automation |
-| `infra` | Terraform and infrastructure changes |
-| `e2e` | E2E tests |
+| `infra` | Infrastructure changes |
+| `ci` | CI/CD pipeline configs |
+| `e2e` | End-to-end tests |
 
-> **Scope distinction:** Use `infra` for Terraform and infrastructure changes (e.g. `feat(infra): add Lambda function`). Use `ci` for CI/CD pipeline configs, GitHub Actions workflows, and PR automation (e.g. `feat(ci): add staging deploy job`).
+> **Note:** Adapt scope names to the project. Check `.opencode/opencode.json` `profile` and existing commits to see what scopes are established.
 
 ### Examples
 
 ```
-feat(backend): add ratings repository and service
+feat(backend): add user ratings endpoint
 
-fix(frontend): correct offer card selector on user page
-refactor(e2e): extract shared workflow helpers
-chore: update Go dependencies to v1.26
+fix(frontend): correct date picker timezone handling
+
+refactor(mobile): extract shared navigation helpers
+
+chore: update dependencies
+
 test(backend): add handler tests for ratings endpoint
-docs(api): update swagger annotations for workshops
+
+docs(api): update OpenAPI annotations
 ```
 
 ### Rules
 
-1. **Subject line**: Maximum 72 characters (hard limit to avoid git hook warnings)
-   - Count characters: `echo "feat(backend): message" | wc -c`
-   - If >72 chars, shorten or split into body
+1. **Subject line**: Maximum 72 characters (hard limit)
 2. **Imperative mood**: "add" not "added"
 3. **Keep it concise**: No investigation reports in commits
 4. **No period at end**: Not a sentence
 5. **Reference issues**: `Fixes #123` in footer if applicable
-
-## Release Management
-
-### Preparing a Release
-
-```bash
-# 1. Ensure dev is up to date
-git checkout dev && git pull origin dev
-
-# 2. Create release branch (optional for hotfixes)
-git checkout -b release/v1.2.0
-
-# 3. Update version files if needed
-# - backend/internal/version/version.go
-# - web-frontend/package.json
-
-# 4. Run full validation
-make validate
-
-# 5. Commit version bump
-version bump
-git commit -m "chore: bump version to v1.2.0"
-
-# 6. Create tag
-git tag -a v1.2.0 -m "Release v1.2.0"
-
-# 7. Push tag
-git push origin v1.2.0
-
-# 8. Create GitHub release (CI will deploy)
-gh release create v1.2.0 --generate-notes
-```
-
-### Changelog Generation
-
-Use conventional commits to auto-generate changelogs:
-
-```bash
-# View changes since last tag
-git log $(git describe --tags --abbrev=0)..HEAD --oneline
-
-# Group by type
-feat: git log ... --grep="^feat"
-fix: git log ... --grep="^fix"
-```
 
 ## PR Workflow
 
@@ -171,13 +131,11 @@ gh pr create \
 Brief description of changes
 
 ## Changes
-- Added ratings repository
-- Added ratings service
-- Added ratings handler
+- <list of changes>
 
 ## Testing
 - [ ] Unit tests pass
-- [ ] E2E tests pass
+- [ ] E2E tests pass (if applicable)
 - [ ] Manual testing done
 
 ## Related
@@ -192,13 +150,50 @@ Closes #123"
 - Keep PRs focused (one feature/fix per PR)
 - Request review from code owners
 
+## Release Management
+
+### Preparing a Release
+
+```bash
+# 1. Ensure default branch is up to date
+git checkout <default_branch> && git pull origin <default_branch>
+
+# 2. Create release branch (optional for hotfixes)
+git checkout -b release/v1.2.0
+
+# 3. Update version files as required by the project
+
+# 4. Commit version bump
+git commit -m "chore: bump version to v1.2.0"
+
+# 5. Create tag
+git tag -a v1.2.0 -m "Release v1.2.0"
+
+# 6. Push tag
+git push origin v1.2.0
+
+# 7. Create GitHub release
+gh release create v1.2.0 --generate-notes
+```
+
+### Changelog Generation
+
+```bash
+# View changes since last tag
+git log $(git describe --tags --abbrev=0)..HEAD --oneline
+
+# Group by type
+git log ... --grep="^feat"
+git log ... --grep="^fix"
+```
+
 ## Safety Rules
 
-1. **Never commit directly to main** — always use a branch
+1. **Never commit directly to the default branch** — always use a branch
 2. **One branch per task** — don't mix unrelated changes
 3. **Keep branches short-lived** — merge and delete after completion
-4. **Always run `make validate` before pushing**
-5. **Never force-push to main**
+4. **Run validation before pushing** — use `profile.commands` to find the right command
+5. **Never force-push to the default branch**
 
 ## Troubleshooting
 
@@ -211,13 +206,13 @@ git push origin --delete old-name
 git push origin -u new-name
 ```
 
-### Forgot to branch from dev
+### Forgot to branch from default branch
 
 ```bash
-# If you have uncommitted changes on dev
+# If you have uncommitted changes on default branch
 git stash
-git checkout dev
-git pull origin dev
+git checkout <default_branch>
+git pull origin <default_branch>
 git checkout -b feature/my-feature
 git stash pop
 ```
@@ -225,19 +220,18 @@ git stash pop
 ### Commit message too long
 
 ```bash
-# Amend last commit message
-git commit --amend -m "new message"
-git push --force-with-lease  # If already pushed
+# Amend last commit message (only if not yet pushed)
+git commit --amend -m "shorter message"
 ```
 
 ## Quick Reference
 
 ```bash
 # Create feature branch
-git checkout dev && git pull origin dev && git checkout -b feature/name
+git checkout <default_branch> && git pull origin <default_branch> && git checkout -b feature/name
 
 # Commit with conventional format
-git commit -m "feat(backend): add feature"
+git commit -m "feat(scope): add feature"
 
 # Push and create PR
 git push -u origin feature/name && gh pr create --fill

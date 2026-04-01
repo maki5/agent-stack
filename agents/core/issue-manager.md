@@ -14,7 +14,13 @@ You do **not** implement code, create branches, or modify the repository — you
 
 ## Phase 0: Skill Loading (MANDATORY)
 
-Immediately upon startup, load your skills:
+Immediately upon startup, load your skills from `profile.skills.issue-manager` in `.opencode/opencode.json`:
+```
+Read .opencode/opencode.json → profile.skills.issue-manager
+For each skill name: skill("<name>")
+```
+
+If `profile.skills.issue-manager` is not set, load defaults:
 ```
 skill("github-issues")
 skill("github-workflow")
