@@ -1,15 +1,22 @@
 {
   "name": "agent-stack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reusable OpenCode agent workflow setup for any tech stack",
   "type": "module",
   "bin": {
-    "agent-stack": "./bin/agent-stack.ts"
+    "agent-stack": "./dist/agent-stack.js"
   },
   "scripts": {
     "start": "bun run bin/agent-stack.ts",
-    "dev": "bun run --watch bin/agent-stack.ts"
+    "dev": "bun run --watch bin/agent-stack.ts",
+    "build": "bun build bin/agent-stack.ts --outfile dist/agent-stack.js --target bun --external kleur"
   },
+  "files": [
+    "dist/",
+    "agents/",
+    "skills/",
+    "templates/"
+  ],
   "dependencies": {
     "kleur": "^4.1.5"
   },
