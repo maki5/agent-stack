@@ -13,6 +13,8 @@
  *       setup.md             ← /setup slash command
  *     skills/
  *       <name>/SKILL.md      ← copied from skills/core/
+ *     tools/
+ *       setup_wizard.ts      ← interactive setup wizard tool
  */
 
 import { existsSync, mkdirSync, writeFileSync, cpSync } from "fs";
@@ -182,6 +184,12 @@ export async function generate(opts: GenerateOptions = {}): Promise<void> {
   const coreSkillsDest = join(opencodeDir, "skills");
   copyDir(coreSkillsSrc, coreSkillsDest);
   console.log("  ✓ .opencode/skills/ (core skills)");
+
+  // ── 5. Tools ────────────────────────────────────────────────────────────────
+  const toolsSrc = join(PACKAGE_ROOT, "tools");
+  const toolsDest = join(opencodeDir, "tools");
+  copyDir(toolsSrc, toolsDest);
+  console.log("  ✓ .opencode/tools/ (setup_wizard)");
 
   console.log("\nDone.\n");
   console.log("Next step: open this project in OpenCode and run /setup");
