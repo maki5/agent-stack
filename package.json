@@ -9,7 +9,8 @@
   "scripts": {
     "start": "bun run bin/agent-stack.ts",
     "dev": "bun run --watch bin/agent-stack.ts",
-    "build": "bun build bin/agent-stack.ts --outfile dist/agent-stack.js --target bun --external kleur"
+    "build": "bun build bin/agent-stack.ts --outfile dist/agent-stack.js --target bun --external kleur",
+    "prepublishOnly": "bun run build"
   },
   "files": [
     "dist/",
