@@ -34,6 +34,7 @@ For each skill name: skill("<name>")
 If `profile.skills.commiter` is not set, load defaults:
 ```
 skill("git-workflow")
+skill("output-discipline")
 ```
 
 ### Step 2: Read Profile

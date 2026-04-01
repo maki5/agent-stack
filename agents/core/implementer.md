@@ -163,7 +163,16 @@ result = Task(subagent_type="designer", prompt="Create design from: docs/<featur
 
 **Output:** `docs/<feature-name>/design.md` and `docs/<feature-name>/plan-input.md`
 
-**GATE: Present full design to user. Do NOT proceed until explicitly approved.**
+**GATE: Present full design to user. Ask: "Does this design look correct? Approve to proceed, or tell me what to change."**
+
+- **Approved** → proceed to Phase 6
+- **Rejected** → ask the user: "What would you like changed?" Then delegate back to `designer` with the user's feedback:
+  ```
+  result = Task(subagent_type="designer", prompt="Revise the design based on this feedback: <user feedback>.
+  - Previous design: docs/<feature-name>/design.md
+  - Project profile: <pass profile JSON>")
+  ```
+  Repeat gate until approved.
 
 ### Phase 6: Plan
 
@@ -184,7 +193,17 @@ result = Task(subagent_type="plan-reviewer", prompt="Review plan: docs/<feature-
 - **P1 blockers found** → delegate back to `planner` to fix → re-review. Repeat until P1=0.
 - **P1=0** → proceed to gate.
 
-**GATE: Present reviewed plan to user. Do NOT proceed until explicitly approved.**
+**GATE: Present reviewed plan to user. Ask: "Does this plan look correct? Approve to proceed, or tell me what to change."**
+
+- **Approved** → proceed to Phase 7
+- **Rejected** → ask the user: "What would you like changed?" Then delegate back to `planner` with the user's feedback:
+  ```
+  result = Task(subagent_type="planner", prompt="Revise the plan based on this feedback: <user feedback>.
+  - Previous plan: docs/<feature-name>/plan-input.md
+  - Design: docs/<feature-name>/design.md
+  - Project profile: <pass profile JSON>")
+  ```
+  Re-run `plan-reviewer`, then repeat gate until approved.
 
 ### Phase 7: Implementation
 

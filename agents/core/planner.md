@@ -111,7 +111,14 @@ List the files to be created or modified, using paths from `profile.paths` in `.
 
 ## Commit Strategy
 
-Break work into logical, incremental commits following conventional commits format. Base scope names on the project's actual layers (e.g. backend, frontend, mobile, infra).
+Break work into logical, atomic commits following the rules in the `git-workflow` skill. Base scope names on the project's actual layers (e.g. backend, frontend, mobile, infra).
+
+A typical commit sequence for a feature:
+1. Data layer (migration + model) — if applicable
+2. Business logic + API handler — per layer
+3. Tests — bundled with their layer or as a separate commit if substantial
+4. Client changes — per layer
+5. Formatter/lint fixes — always a separate `chore: format` commit
 
 ## Acceptance Criteria
 - [ ] All tests pass
