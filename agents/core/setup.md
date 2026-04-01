@@ -152,6 +152,64 @@ Read the current `.opencode/opencode.json`, then write the updated profile secti
 
 Remove the `"TODO"` field once all fields are filled.
 
+## Phase 4.5: Model Selection
+
+Ask the user how they want to assign models to agents. Present three options:
+
+```
+Your agents currently default to opencode/gpt-5-nano (permanently free via OpenCode Zen).
+
+How would you like to configure model assignments?
+
+A) Keep all agents on the free model (opencode/gpt-5-nano)
+   No cost, good for experimentation.
+
+B) Opinionated split (recommended for production use)
+   Thinkers → opencode/claude-sonnet-4-5 ($3/M input)
+     implementer, debugger, setup, researcher, designer, ui-designer,
+     planner, plan-reviewer, tester, reviewer, issue-manager,
+     and all developer agents
+   Mechanics → opencode/claude-haiku-4-5 ($1/M input)
+     cleaner, formatter, commiter
+
+C) Configure per-agent manually
+   I will ask you to pick a model for each agent role.
+```
+
+Wait for the user's answer, then apply the chosen assignment:
+
+### If A (keep free)
+No changes needed — the stub already defaults to `opencode/gpt-5-nano`.
+
+### If B (opinionated split)
+Update the `"agent"` block in `.opencode/opencode.json`:
+
+**Thinker agents** (set model to `opencode/claude-sonnet-4-5`):
+`implementer`, `debugger`, `setup`, `researcher`, `designer`, `ui-designer`,
+`planner`, `plan-reviewer`, `tester`, `reviewer`, `issue-manager`,
+and any developer agents that will be generated (`backend-developer`, `frontend-developer`, `mobile-developer`, `infra-developer` — only those whose layer is `true` in the profile).
+
+**Mechanic agents** (set model to `opencode/claude-haiku-4-5`):
+`cleaner`, `formatter`, `commiter`
+
+Also update the top-level `"model"` key to `opencode/claude-sonnet-4-5`.
+
+### If C (per-agent manual)
+For each agent role (only those active for this project), ask:
+
+```
+Which model for <role>?
+  1. opencode/gpt-5-nano      (free, permanently)
+  2. opencode/claude-sonnet-4-5   ($3/M input — best for reasoning)
+  3. opencode/claude-haiku-4-5    ($1/M input — fast, cheap)
+  4. opencode/claude-haiku-3-5    ($0.80/M input — fastest, cheapest)
+  [other — type your own opencode/<model-id>]
+```
+
+Collect all answers, then write the full updated `"agent"` block at once.
+
+> **Note:** All model IDs above use the `opencode/` prefix — these are OpenCode Zen models. If the user brings their own API key for a different provider, they can use e.g. `anthropic/claude-sonnet-4-5` or `openai/gpt-4o`. Accept any provider-prefixed model ID the user provides.
+
 ## Phase 5: Resolve Skills for Every Agent Role
 
 For each agent role, find the best skills using `find-skills`, then write the results to `profile.skills` in `opencode.json`.
@@ -270,6 +328,10 @@ Profile:
   Branch: <default_branch>
   Layers: backend=<yes/no>, frontend=<yes/no>, mobile=<yes/no>, infra=<yes/no>, database=<yes/no>
 
+Models:
+  <role>: <model-id>
+  ...
+
 Developer agents generated:
   <list of files written>
 
@@ -298,7 +360,7 @@ If yes → run each command from `profile.commands` and report pass/fail.
 4. Never hardcode tech-specific content in agent files — use the `agent-creator` template
 5. Always write valid YAML frontmatter in every file you create
 6. Always update `profile.skills` for every active role — never leave it empty
-7. Always update `profile.skills` for every active role — never leave it empty
+7. Always run Phase 4.5 and write chosen model IDs into the `"agent"` block — never skip model selection
 8. If `npx skills find` finds nothing relevant, generate a new SKILL.md using `skills-creator`
 9. Never modify the 13 core agent files — only generate new developer agent files
 10. Confirm with the user before overwriting existing developer agent files

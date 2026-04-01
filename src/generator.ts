@@ -45,50 +45,50 @@ const OPENCODE_JSON_STUB = `{
 
   "theme": "opencode",
 
-  "model": "anthropic/claude-sonnet-4-5",
+  "model": "opencode/gpt-5-nano",
 
   "agent": {
     "implementer": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "debugger": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "setup": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "researcher": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "designer": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "ui-designer": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "planner": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "plan-reviewer": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "tester": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "reviewer": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "cleaner": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "formatter": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "commiter": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     },
     "issue-manager": {
-      "model": "anthropic/claude-sonnet-4-5"
+      "model": "opencode/gpt-5-nano"
     }
   },
 
