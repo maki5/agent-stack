@@ -46,7 +46,7 @@ The setup agent will have populated this with tech-specific testing skills appro
 
 ### Step 2: Read Profile for Test Commands
 
-Read `.opencode/opencode.json` to get the correct commands:
+Read `.opencode/profile.json` to get the correct commands:
 - `commands.test` — unit/integration test command
 - `commands.e2e` — E2E test command (if set)
 

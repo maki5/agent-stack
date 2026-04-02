@@ -48,50 +48,50 @@ const OPENCODE_JSON_STUB = `{
 
   "theme": "opencode",
 
-  "model": "opencode/gpt-5-nano",
+  "model": "opencode/qwen3.6-plus-free",
 
   "agent": {
     "implementer": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "debugger": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "setup": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "researcher": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "designer": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "ui-designer": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "planner": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "plan-reviewer": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "tester": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "reviewer": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "cleaner": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "formatter": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "commiter": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     },
     "issue-manager": {
-      "model": "opencode/gpt-5-nano"
+      "model": "opencode/qwen3.6-plus-free"
     }
   }
 }
@@ -100,30 +100,31 @@ const OPENCODE_JSON_STUB = `{
 // ─── Stub profile.json ────────────────────────────────────────────────────────
 
 const PROFILE_JSON_STUB = `{
-  "TODO": "Run /setup in OpenCode to complete this file",
   "project_name": "",
   "description": "",
   "default_branch": "main",
+  "arch_pattern": "",
   "has_backend": false,
   "has_frontend": false,
   "has_mobile": false,
   "has_infra": false,
   "has_database": false,
   "platform": "",
-  "arch_pattern": "",
-  "commands": {
-    "build": "",
-    "test": "",
-    "lint": "",
-    "format": "",
-    "typecheck": "",
-    "e2e": ""
+  "repo": "",
+  "stacks": {
+    "backend": "",
+    "frontend": "",
+    "mobile": "",
+    "infra": "",
+    "database": ""
   },
   "paths": {
     "backend_src": "",
     "frontend_src": "",
     "mobile_src": ""
   },
+  "agents": {},
+  "commands": {},
   "skills": {}
 }
 `;
